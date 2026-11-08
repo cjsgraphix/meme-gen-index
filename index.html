@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme Gen Index | Zero-G RWA Terminal</title>
+    <style>
+        :root {
+            --bg-color: #080a0f;
+            --container-bg: rgba(19, 23, 34, 0.7);
+            --accent-green: #39ff14; /* Neon antigravity green */
+            --text-main: #ffffff;
+            --text-muted: #8a90a0;
+            --border-color: rgba(42, 46, 57, 0.6);
+            --glow-color: rgba(57, 255, 20, 0.2);
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(26, 115, 232, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(57, 255, 20, 0.05) 0px, transparent 50%);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Float Animations */
+        @keyframes float-slow {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        @keyframes float-reverse {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        header {
+            text-align: center;
+            padding: 50px 20px;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: float-slow 8s ease-in-out infinite;
+        }
+        h1 {
+            font-size: 2.8rem;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        h1 span {
+            color: var(--accent-green);
+            text-shadow: 0 0 15px var(--glow-color);
+        }
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .metric-card {
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        /* Staggered floating effects for cards */
+        .metric-card:nth-child(1) { animation: float-reverse 7s ease-in-out infinite; }
+        .metric-card:nth-child(2) { animation: float-slow 6s ease-in-out infinite; }
+        .metric-card:nth-child(3) { animation: float-reverse 8s ease-in-out infinite; }
+
+        .metric-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            border-color: var(--accent-green);
+            box-shadow: 0 20px 40px rgba(57, 255, 20, 0.1);
+        }
+        .metric-card h3 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        .metric-card p {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+        .metric-card .highlight {
+            color: var(--accent-green);
+        }
+
+        .table-container {
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            overflow-x: auto;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            background-color: rgba(42, 46, 57, 0.5);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr td {
+            transition: all 0.3s ease;
+        }
+        /* Push rows upwards gently when hovered to simulate weightlessness */
+        tr:hover td {
+            background-color: rgba(26, 115, 232, 0.05);
+            transform: translateY(-4px);
+            color: #fff;
+        }
+        .ticker {
+            font-weight: bold;
+            color: var(--accent-green);
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+        .btn {
+            display: inline-block;
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--text-main);
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background-color: var(--text-main);
+            color: var(--bg-color);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+        .btn-accent {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        .btn-accent:hover {
+            background-color: var(--accent-green);
+            color: var(--bg-color);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+        .spec-panel {
+            margin-top: 30px;
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+        .spec-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .spec-header h3 {
+            font-size: 0.9rem;
+            color: var(--accent-green);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-family: monospace;
+        }
+        .spec-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: rgba(42, 46, 57, 0.4);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+            background: rgba(57, 255, 20, 0.08);
+        }
+        .spec-pre {
+            background: rgba(8, 10, 15, 0.85);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 18px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            padding: 30px;
+            border-top: 1px solid var(--border-color);
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MEME GEN <span>INDEX</span></h1>
+            <p>Weightless Real World Asset Execution • Powered by Pump.fun Custom Pairs</p>
+        </header>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>Terminal Gravity</h3>
+                <p class="highlight">0.00G (Zero-G)</p>
+            </div>
+            <div class="metric-card">
+                <h3>Creator Revenue Yield</h3>
+                <p>0.30% Automatic Vault</p>
+            </div>
+            <div class="metric-card">
+                <h3>Extraction Status</h3>
+                <p class="highlight">Farming Active</p>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Asset Matrix Name</th>
+                        <th>RWA Target Equity</th>
+                        <th>Index Weight</th>
+                        <th>Terminal Launchpad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="ticker">$NVYDA</span></td>
+                        <td>NVYDA AI OVERLORD</td>
+                        <td>NVDAX (Nvidia Corp)</td>
+                        <td>35%</td>
+                        <td>
+                            <a href="https://pump.fun" target="_blank" class="btn">Access Pool</a>
+                            <button class="btn btn-accent" onclick="selectAsset('NVDAX', '$NVYDA', true)">Copy Spec</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="ticker">$CYBER</span></td>
+                        <td>ELON'S CYBERTRUCK EXTINCT</td>
+                        <td>TSLAX (Tesla Inc)</td>
+                        <td>25%</td>
+                        <td>
+                            <a href="https://pump.fun" target="_blank" class="btn">Access Pool</a>
+                            <button class="btn btn-accent" onclick="selectAsset('TSLAX', '$CYBER', true)">Copy Spec</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="ticker">$ROAR</span></td>
+                        <td>ROARING DIAMOND CAT</td>
+                        <td>GMEX (GameStop Corp)</td>
+                        <td>25%</td>
+                        <td>
+                            <a href="https://pump.fun" target="_blank" class="btn">Access Pool</a>
+                            <button class="btn btn-accent" onclick="selectAsset('GMEX', '$ROAR', true)">Copy Spec</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="ticker">$PRINTER</span></td>
+                        <td>MONEY PRINTER BRRR</td>
+                        <td>SPYX (S&amp;P 500 Index)</td>
+                        <td>15%</td>
+                        <td>
+                            <a href="https://pump.fun" target="_blank" class="btn">Access Pool</a>
+                            <button class="btn btn-accent" onclick="selectAsset('SPYX', '$PRINTER', true)">Copy Spec</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="spec-panel">
+            <div class="spec-header">
+                <h3>[MEME GEN INDEX MATRIX: ASSET CODE SECTOR]</h3>
+                <div class="spec-tabs">
+                    <button class="tab-btn active" data-rwa="NVDAX" onclick="selectAsset('NVDAX', '$NVYDA', false)">$NVYDA / NVDAX</button>
+                    <button class="tab-btn" data-rwa="TSLAX" onclick="selectAsset('TSLAX', '$CYBER', false)">$CYBER / TSLAX</button>
+                    <button class="tab-btn" data-rwa="GMEX" onclick="selectAsset('GMEX', '$ROAR', false)">$ROAR / GMEX</button>
+                    <button class="tab-btn" data-rwa="SPYX" onclick="selectAsset('SPYX', '$PRINTER', false)">$PRINTER / SPYX</button>
+                    <button id="copy-spec-btn" class="btn btn-accent" onclick="copyCurrentSpec()">Copy Payload</button>
+                </div>
+            </div>
+            <pre id="spec-output" class="spec-pre"></pre>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 Meme Gen Index. Structural data streams simulated via underlying Solana equity pairs. Zero human deployment capital retained.</p>
+        </footer>
+    </div>
+
+    <script>
+        let currentRwa = 'NVDAX';
+
+        function buildSpecText(rwaTicker) {
+            const dashboardUrl = 'https://cjsgraphix.github.io/meme-gen-index/';
+            return `[MEME GEN INDEX MATRIX: ASSET CODE SECTOR]
+Automated RWA index asset tracking underlying equity metrics. 24/7 cross-market programmatic arbitrage target. Optimized routing layer via Pump.fun Custom Pairs. 
+
+• Underlying RWA Quote Asset: ${rwaTicker}
+• Settlement Infrastructure: Solana Tokenized Equities
+• Liquidity Matrix Profile: Market-Maker & Bot Arbitrage Target Pool. 
+• Operational Core: Terminal Gravity 0.00G. 
+
+[Index Dashboard Access: ${dashboardUrl}]`;
+        }
+
+        function selectAsset(rwaTicker, memeTicker, shouldCopy) {
+            currentRwa = rwaTicker;
+            document.getElementById('spec-output').textContent = buildSpecText(rwaTicker);
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.rwa === rwaTicker);
+            });
+            if (shouldCopy) {
+                copyCurrentSpec();
+            }
+        }
+
+        function copyCurrentSpec() {
+            const text = document.getElementById('spec-output').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('copy-spec-btn');
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = original; }, 1500);
+            });
+        }
+
+        selectAsset('NVDAX', '$NVYDA', false);
+    </script>
+</body>
+</html>
