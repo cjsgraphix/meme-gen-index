@@ -3,359 +3,1273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meme Gen Index | Zero-G RWA Terminal</title>
+    <title>MEME GEN INDEX // 0.00G RWA Execution Terminal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #080a0f;
-            --container-bg: rgba(19, 23, 34, 0.7);
-            --accent-green: #39ff14; /* Neon antigravity green */
-            --text-main: #ffffff;
-            --text-muted: #8a90a0;
-            --border-color: rgba(42, 46, 57, 0.6);
-            --glow-color: rgba(57, 255, 20, 0.2);
+            --bg-obsidian: #0D0D0E;
+            --surface-1: #121214;
+            --surface-2: #17171A;
+            --surface-3: #1E1E22;
+            --text-primary: #EDEDED;
+            --text-secondary: #8E8E93;
+            --text-muted: #56565C;
+            --accent-lime: #D4FF00;
+            --accent-lime-dim: rgba(212, 255, 0, 0.12);
+            --accent-emerald: #10B981;
+            --accent-amber: #F59E0B;
+            --border-hairline: rgba(255, 255, 255, 0.09);
+            --border-strong: rgba(255, 255, 255, 0.18);
+            --font-display: 'Syne', 'Space Grotesk', sans-serif;
+            --font-sans: 'Space Grotesk', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
-        * {
+
+        *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+
+        html {
+            background-color: var(--bg-obsidian);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(26, 115, 232, 0.1) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(57, 255, 20, 0.05) 0px, transparent 50%);
-            color: var(--text-main);
-            line-height: 1.6;
-            padding: 40px 20px;
-            overflow-x: hidden;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
+            min-block-size: 100dvh;
+            background-color: var(--bg-obsidian);
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            position: relative;
+            overflow-x: clip;
         }
 
-        /* Float Animations */
-        @keyframes float-slow {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        @keyframes float-reverse {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(8px); }
-            100% { transform: translateY(0px); }
+        /* Subtle SVG tactile grain overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        header {
-            text-align: center;
-            padding: 50px 20px;
-            background: var(--container-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            margin-bottom: 30px;
+        /* Top Telemetry Ribbon */
+        .telemetry-bar {
+            border-block-end: 1px solid var(--border-hairline);
+            background: rgba(13, 13, 14, 0.88);
             backdrop-filter: blur(12px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            animation: float-slow 8s ease-in-out infinite;
-        }
-        h1 {
-            font-size: 2.8rem;
-            letter-spacing: 4px;
-            margin-bottom: 12px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-        }
-        h1 span {
-            color: var(--accent-green);
-            text-shadow: 0 0 15px var(--glow-color);
-        }
-        header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        .metric-card {
-            background-color: var(--container-bg);
-            border: 1px solid var(--border-color);
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
-        /* Staggered floating effects for cards */
-        .metric-card:nth-child(1) { animation: float-reverse 7s ease-in-out infinite; }
-        .metric-card:nth-child(2) { animation: float-slow 6s ease-in-out infinite; }
-        .metric-card:nth-child(3) { animation: float-reverse 8s ease-in-out infinite; }
-
-        .metric-card:hover {
-            transform: translateY(-15px) scale(1.02);
-            border-color: var(--accent-green);
-            box-shadow: 0 20px 40px rgba(57, 255, 20, 0.1);
-        }
-        .metric-card h3 {
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            position: sticky;
+            inset-block-start: 0;
+            z-index: 50;
+            padding-block: 0.65rem;
+            padding-inline: clamp(1rem, 3vw, 2.5rem);
+            display: flex;
+            align-items: safe center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-        .metric-card p {
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: var(--text-main);
-        }
-        .metric-card .highlight {
-            color: var(--accent-green);
         }
 
-        .table-container {
-            background-color: var(--container-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            overflow: hidden;
-            overflow-x: auto;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        .telemetry-group {
+            display: flex;
+            align-items: safe center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-        th, td {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        th {
-            background-color: rgba(42, 46, 57, 0.5);
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        tr td {
-            transition: all 0.3s ease;
-        }
-        /* Push rows upwards gently when hovered to simulate weightlessness */
-        tr:hover td {
-            background-color: rgba(26, 115, 232, 0.05);
-            transform: translateY(-4px);
-            color: #fff;
-        }
-        .ticker {
-            font-weight: bold;
-            color: var(--accent-green);
-            font-family: monospace;
-            font-size: 1.1rem;
-        }
-        .btn {
+
+        .status-dot {
             display: inline-block;
-            background: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--text-main);
-            text-decoration: none;
-            padding: 8px 18px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            letter-spacing: 1px;
+            inline-size: 7px;
+            block-size: 7px;
+            background-color: var(--accent-lime);
+            box-shadow: 0 0 10px var(--accent-lime);
+            margin-inline-end: 0.5rem;
+            animation: pulse-dot 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+
+        .telemetry-tag {
+            color: var(--text-secondary);
+        }
+
+        .telemetry-tag strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .telemetry-tag .lime {
+            color: var(--accent-lime);
+        }
+
+        /* Architectural Shell */
+        .shell {
+            max-inline-size: 1380px;
+            margin-inline: auto;
+            padding-inline: clamp(1rem, 3vw, 2.5rem);
+            padding-block: clamp(2rem, 4vw, 3.5rem);
+        }
+
+        /* Section Index Header */
+        .section-meta {
+            display: flex;
+            align-items: safe center;
+            justify-content: space-between;
+            padding-block-end: 0.75rem;
+            margin-block-end: 1.25rem;
+            border-block-end: 1px solid var(--border-hairline);
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.14em;
             text-transform: uppercase;
-            transition: all 0.3s ease;
+            color: var(--text-secondary);
         }
-        .btn:hover {
-            background-color: var(--text-main);
-            color: var(--bg-color);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-            transform: scale(1.05);
+
+        .section-meta .coord {
+            color: var(--accent-lime);
+            font-weight: 600;
         }
-        .btn-accent {
-            border-color: var(--accent-green);
-            color: var(--accent-green);
+
+        /* Asymmetric 12-Col Hero Grid */
+        .hero-bento {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1px;
+            background-color: var(--border-hairline);
+            border: 1px solid var(--border-hairline);
+            margin-block-end: 3.5rem;
+            position: relative;
+        }
+
+        /* Corner Crosshairs */
+        .crosshair {
+            position: absolute;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1;
+            pointer-events: none;
+            user-select: none;
+        }
+        .ch-tl { inset-block-start: -6px; inset-inline-start: -4px; }
+        .ch-tr { inset-block-start: -6px; inset-inline-end: -4px; }
+        .ch-bl { inset-block-end: -6px; inset-inline-start: -4px; }
+        .ch-br { inset-block-end: -6px; inset-inline-end: -4px; }
+
+        .hero-main {
+            grid-column: span 8;
+            background-color: var(--surface-1);
+            padding: clamp(2rem, 4vw, 3.5rem);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 2.5rem;
+        }
+
+        .hero-sidebar {
+            grid-column: span 4;
+            background-color: var(--surface-1);
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            background-color: var(--border-hairline);
+        }
+
+        @media (max-width: 960px) {
+            .hero-main, .hero-sidebar {
+                grid-column: span 12;
+            }
+        }
+
+        .badge-row {
+            display: flex;
+            align-items: safe center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .badge-lime {
+            background-color: var(--accent-lime);
+            color: #000000;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .badge-outline {
+            border: 1px solid var(--border-strong);
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 0.25rem 0.65rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.8rem, 6vw, 5.4rem);
+            font-weight: 800;
+            line-height: 0.94;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+            color: var(--text-primary);
+            margin-block: 1rem 1.25rem;
+        }
+
+        .hero-title .accent {
+            color: var(--accent-lime);
+            display: inline-block;
+        }
+
+        .hero-title .stroke-word {
+            color: transparent;
+            -webkit-text-stroke: 1.5px var(--text-primary);
+        }
+
+        .hero-subtitle {
+            font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+            color: var(--text-secondary);
+            max-inline-size: 62ch;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        /* Index Allocation Strip inside Hero */
+        .allocation-module {
+            padding-block-start: 1.75rem;
+            border-block-start: 1px solid var(--border-hairline);
+        }
+
+        .allocation-header {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-block-end: 0.75rem;
+        }
+
+        .allocation-bar {
+            display: flex;
+            block-size: 34px;
+            gap: 3px;
+            inline-size: 100%;
+        }
+
+        .alloc-segment {
+            position: relative;
+            background-color: var(--surface-3);
+            border: 1px solid var(--border-strong);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-inline: 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
             cursor: pointer;
-            margin-left: 8px;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            min-inline-size: 0;
+            overflow: clip;
         }
-        .btn-accent:hover {
-            background-color: var(--accent-green);
-            color: var(--bg-color);
-            box-shadow: 0 0 15px var(--glow-color);
+
+        .alloc-segment:hover,
+        .alloc-segment.active {
+            background-color: var(--accent-lime);
+            border-color: var(--accent-lime);
+            color: #000;
         }
-        .spec-panel {
-            margin-top: 30px;
-            background-color: var(--container-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 25px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+
+        .alloc-segment span.pct {
+            opacity: 0.75;
+            font-size: 0.68rem;
         }
-        .spec-header {
+
+        /* Hero Right Telemetry Cards */
+        .kpi-cell {
+            background-color: var(--surface-1);
+            padding: 1.5rem 1.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1 1 auto;
+        }
+
+        .kpi-label {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-secondary);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
         }
-        .spec-header h3 {
-            font-size: 0.9rem;
-            color: var(--accent-green);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-family: monospace;
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: clamp(1.5rem, 2.2vw, 2.1rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-block: 0.4rem 0.25rem;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
         }
-        .spec-tabs {
+
+        .kpi-value.lime {
+            color: var(--accent-lime);
+        }
+
+        .kpi-sub {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-muted);
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
         }
-        .tab-btn {
-            background: rgba(42, 46, 57, 0.4);
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 0.85rem;
+
+        .kpi-delta {
+            color: var(--accent-emerald);
+            font-weight: 600;
+        }
+
+        /* Constituent Matrix Table Container */
+        .matrix-section {
+            margin-block-end: 3.5rem;
+        }
+
+        .table-wrapper {
+            container: matrix-table / inline-size;
+            overflow-x: auto;
+            max-inline-size: 100%;
+            scrollbar-gutter: stable;
+            border: 1px solid var(--border-hairline);
+            background-color: var(--surface-1);
+        }
+
+        .table-wrapper:focus-visible {
+            outline: 2px solid var(--accent-lime);
+            outline-offset: 2px;
+        }
+
+        table {
+            inline-size: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            text-align: start;
+            font-variant-numeric: tabular-nums;
+        }
+
+        caption {
+            position: absolute;
+            inline-size: 1px;
+            block-size: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: clip;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        thead {
+            position: sticky;
+            inset-block-start: 0;
+            z-index: 2;
+            background-color: var(--surface-2);
+        }
+
+        th {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-secondary);
+            padding: 1rem 1.25rem;
+            border-block-end: 1px solid var(--border-hairline);
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            transition: background-color 0.15s ease;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
-        .tab-btn.active, .tab-btn:hover {
-            color: var(--accent-green);
-            border-color: var(--accent-green);
-            background: rgba(57, 255, 20, 0.08);
+
+        tbody tr:hover,
+        tbody tr.selected-row {
+            background-color: var(--surface-2);
         }
-        .spec-pre {
-            background: rgba(8, 10, 15, 0.85);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 18px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            color: var(--text-main);
-            white-space: pre-wrap;
-            line-height: 1.6;
+
+        tbody tr.selected-row th,
+        tbody tr.selected-row td {
+            border-block-end-color: rgba(212, 255, 0, 0.25);
         }
-        footer {
-            text-align: center;
-            margin-top: 60px;
+
+        tbody th,
+        tbody td {
+            padding: 1.25rem;
+            border-block-end: 1px solid var(--border-hairline);
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child th,
+        tbody tr:last-child td {
+            border-block-end: none;
+        }
+
+        /* Sticky row header */
+        tbody th {
+            position: sticky;
+            inset-inline-start: 0;
+            z-index: 1;
+            background-color: var(--surface-1);
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        tbody tr:hover th,
+        tbody tr.selected-row th {
+            background-color: var(--surface-2);
+        }
+
+        .ticker-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .idx-num {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
             color: var(--text-muted);
-            font-size: 0.8rem;
-            padding: 30px;
-            border-top: 1px solid var(--border-color);
-            letter-spacing: 0.5px;
+            padding: 0.15rem 0.4rem;
+            border: 1px solid var(--border-hairline);
+        }
+
+        .ticker-symbol {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--accent-lime);
+            letter-spacing: 0.02em;
+        }
+
+        .asset-name-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .asset-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            letter-spacing: 0.01em;
+        }
+
+        .asset-sub {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .rwa-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            padding: 0.3rem 0.65rem;
+            background-color: var(--surface-3);
+            border: 1px solid var(--border-strong);
+            color: var(--text-primary);
+        }
+
+        .rwa-badge .pair-tag {
+            color: var(--accent-lime);
+            font-weight: 700;
+        }
+
+        .spread-cell {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+        }
+
+        .spread-val {
+            color: var(--accent-emerald);
+            font-weight: 600;
+            display: block;
+        }
+
+        .spread-sub {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+        }
+
+        /* Weight Progress Cell */
+        .weight-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-inline-size: 120px;
+        }
+
+        .weight-num {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.9rem;
+            min-inline-size: 3ch;
+        }
+
+        .weight-track {
+            flex: 1;
+            block-size: 6px;
+            background-color: var(--surface-3);
+            overflow: clip;
+        }
+
+        .weight-fill {
+            block-size: 100%;
+            background-color: var(--accent-lime);
+        }
+
+        /* Sparkline SVG */
+        .sparkline-svg {
+            display: block;
+            inline-size: 110px;
+            block-size: 32px;
+        }
+
+        /* Action Buttons in Table */
+        .action-group {
+            display: flex;
+            align-items: safe center;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .btn-kinetic {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.55rem 0.9rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.12s ease, background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-strong);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--text-primary);
+            background-color: var(--text-primary);
+            color: #000000;
+        }
+
+        .btn-lime {
+            background-color: var(--accent-lime-dim);
+            color: var(--accent-lime);
+            border: 1px solid var(--accent-lime);
+        }
+
+        .btn-lime:hover {
+            background-color: var(--accent-lime);
+            color: #000000;
+        }
+
+        .btn-kinetic:active {
+            transform: translateY(1px);
+        }
+
+        /* Container Query Stacked Responsive Layout for Narrow Containers */
+        @container matrix-table (width < 760px) {
+            table, thead, tbody, tr, th, td {
+                display: block;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tbody tr {
+                border-block-end: 2px solid var(--border-strong);
+                padding-block: 0.5rem;
+            }
+
+            tbody th {
+                position: sticky;
+                inset-block-start: 0;
+                background-color: var(--surface-2);
+                border-block-end: 1px solid var(--border-hairline);
+            }
+
+            tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 1.25rem;
+            }
+
+            table {
+                --label-2: "Asset Matrix";
+                --label-3: "RWA Quote Pair";
+                --label-4: "24h Telemetry";
+                --label-5: "Arb Spread";
+                --label-6: "Index Weight";
+                --label-7: "Execution";
+            }
+
+            td:nth-child(2)::before { content: var(--label-2); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; }
+            td:nth-child(3)::before { content: var(--label-3); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; }
+            td:nth-child(4)::before { content: var(--label-4); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; }
+            td:nth-child(5)::before { content: var(--label-5); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; }
+            td:nth-child(6)::before { content: var(--label-6); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; }
+            td:nth-child(7)::before { content: var(--label-7); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; }
+        }
+
+        /* Spec & Routing Inspector Split Bento (5-col / 7-col) */
+        .inspector-bento {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1px;
+            background-color: var(--border-hairline);
+            border: 1px solid var(--border-hairline);
+            margin-block-end: 3.5rem;
+        }
+
+        .inspector-left {
+            grid-column: span 5;
+            background-color: var(--surface-1);
+            padding: clamp(1.5rem, 3vw, 2.5rem);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1.75rem;
+        }
+
+        .inspector-right {
+            grid-column: span 7;
+            background-color: var(--surface-1);
+            padding: clamp(1.5rem, 3vw, 2.5rem);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 960px) {
+            .inspector-left, .inspector-right {
+                grid-column: span 12;
+            }
+        }
+
+        .inspector-title {
+            font-family: var(--font-display);
+            font-size: 1.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            margin-block-top: 0.35rem;
+        }
+
+        .routing-diagram {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.25rem;
+            background-color: var(--bg-obsidian);
+            border: 1px solid var(--border-hairline);
+            font-family: var(--font-mono);
+        }
+
+        .route-node {
+            padding: 0.75rem;
+            border: 1px solid var(--border-strong);
+            background-color: var(--surface-2);
+        }
+
+        .route-node .node-label {
+            font-size: 0.62rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: block;
+            margin-block-end: 0.25rem;
+        }
+
+        .route-node .node-val {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-lime);
+        }
+
+        .route-arrow {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .spec-meta-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background-color: var(--border-hairline);
+            border: 1px solid var(--border-hairline);
+            font-family: var(--font-mono);
+        }
+
+        .spec-meta-item {
+            background-color: var(--bg-obsidian);
+            padding: 0.85rem 1rem;
+        }
+
+        .spec-meta-item span {
+            display: block;
+            font-size: 0.64rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-block-end: 0.25rem;
+        }
+
+        .spec-meta-item strong {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+
+        .selector-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            flex-wrap: balance;
+            gap: 0.5rem;
+        }
+
+        .tab-pill {
+            background-color: var(--bg-obsidian);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-strong);
+            padding: 0.5rem 0.9rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .tab-pill:hover,
+        .tab-pill.active {
+            background-color: var(--accent-lime);
+            color: #000000;
+            border-color: var(--accent-lime);
+        }
+
+        .terminal-box {
+            position: relative;
+            background-color: var(--bg-obsidian);
+            border: 1px solid var(--border-strong);
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.84rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            flex: 1;
+        }
+
+        .terminal-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-block-end: 0.75rem;
+            margin-block-end: 1rem;
+            border-block-end: 1px solid var(--border-hairline);
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Native Popover Toast */
+        #copy-toast {
+            position: fixed;
+            inset: auto 1.5rem 1.5rem auto;
+            margin: 0;
+            background-color: var(--accent-lime);
+            color: #000000;
+            border: 1px solid #000000;
+            padding: 0.75rem 1.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            box-shadow: 4px 4px 0px #000000;
+        }
+
+        /* Footer */
+        footer {
+            border-block-start: 1px solid var(--border-hairline);
+            padding-block: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: safe center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>MEME GEN <span>INDEX</span></h1>
-            <p>Weightless Real World Asset Execution • Powered by Pump.fun Custom Pairs</p>
-        </header>
 
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <h3>Terminal Gravity</h3>
-                <p class="highlight">0.00G (Zero-G)</p>
-            </div>
-            <div class="metric-card">
-                <h3>Creator Revenue Yield</h3>
-                <p>0.30% Automatic Vault</p>
-            </div>
-            <div class="metric-card">
-                <h3>Extraction Status</h3>
-                <p class="highlight">Farming Active</p>
-            </div>
+    <!-- Top Live Telemetry Ribbon -->
+    <header class="telemetry-bar" role="banner">
+        <div class="telemetry-group">
+            <span><span class="status-dot"></span><strong>ZERO-G RWA EXECUTION LAYER</strong></span>
+            <span class="telemetry-tag">NETWORK: <strong>SOLANA MAINNET-BETA</strong></span>
+            <span class="telemetry-tag">ROUTING: <strong>PUMP.FUN CUSTOM PAIRS</strong></span>
+        </div>
+        <div class="telemetry-group">
+            <span class="telemetry-tag">GRAVITY: <strong class="lime">0.00G</strong></span>
+            <span class="telemetry-tag">VAULT YIELD: <strong>0.30% AUTO</strong></span>
+            <span class="telemetry-tag">UTC: <strong id="live-clock">00:00:00.00</strong></span>
+        </div>
+    </header>
+
+    <main class="shell">
+        <!-- Section 01: Asymmetric Hero & Telemetry Bento -->
+        <div class="section-meta">
+            <span><span class="coord">01 //</span> SYSTEM ARCHITECTURE &amp; WEIGHT ALLOCATION</span>
+            <span>[ARCHIVE: MGI-2026.04]</span>
         </div>
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Ticker</th>
-                        <th>Asset Matrix Name</th>
-                        <th>RWA Target Equity</th>
-                        <th>Index Weight</th>
-                        <th>Terminal Launchpad</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><span class="ticker">$NVYDA</span></td>
-                        <td>NVYDA AI OVERLORD</td>
-                        <td>NVDAX (Nvidia Corp)</td>
-                        <td>35%</td>
-                        <td>
-                            <a href="https://pump.fun" target="_blank" class="btn">Access Pool</a>
-                            <button class="btn btn-accent" onclick="selectAsset('NVDAX', '$NVYDA', true)">Copy Spec</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><span class="ticker">$CYBER</span></td>
-                        <td>ELON'S CYBERTRUCK EXTINCT</td>
-                        <td>TSLAX (Tesla Inc)</td>
-                        <td>25%</td>
-                        <td>
-                            <a href="https://pump.fun" target="_blank" class="btn">Access Pool</a>
-                            <button class="btn btn-accent" onclick="selectAsset('TSLAX', '$CYBER', true)">Copy Spec</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><span class="ticker">$ROAR</span></td>
-                        <td>ROARING DIAMOND CAT</td>
-                        <td>GMEX (GameStop Corp)</td>
-                        <td>25%</td>
-                        <td>
-                            <a href="https://pump.fun" target="_blank" class="btn">Access Pool</a>
-                            <button class="btn btn-accent" onclick="selectAsset('GMEX', '$ROAR', true)">Copy Spec</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><span class="ticker">$PRINTER</span></td>
-                        <td>MONEY PRINTER BRRR</td>
-                        <td>SPYX (S&amp;P 500 Index)</td>
-                        <td>15%</td>
-                        <td>
-                            <a href="https://pump.fun" target="_blank" class="btn">Access Pool</a>
-                            <button class="btn btn-accent" onclick="selectAsset('SPYX', '$PRINTER', true)">Copy Spec</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <section class="hero-bento" aria-label="Index Overview and Live Telemetry">
+            <span class="crosshair ch-tl">+</span>
+            <span class="crosshair ch-tr">+</span>
+            <span class="crosshair ch-bl">+</span>
+            <span class="crosshair ch-br">+</span>
 
-        <div class="spec-panel">
-            <div class="spec-header">
-                <h3>[MEME GEN INDEX MATRIX: ASSET CODE SECTOR]</h3>
-                <div class="spec-tabs">
-                    <button class="tab-btn active" data-rwa="NVDAX" onclick="selectAsset('NVDAX', '$NVYDA', false)">$NVYDA / NVDAX</button>
-                    <button class="tab-btn" data-rwa="TSLAX" onclick="selectAsset('TSLAX', '$CYBER', false)">$CYBER / TSLAX</button>
-                    <button class="tab-btn" data-rwa="GMEX" onclick="selectAsset('GMEX', '$ROAR', false)">$ROAR / GMEX</button>
-                    <button class="tab-btn" data-rwa="SPYX" onclick="selectAsset('SPYX', '$PRINTER', false)">$PRINTER / SPYX</button>
-                    <button id="copy-spec-btn" class="btn btn-accent" onclick="copyCurrentSpec()">Copy Payload</button>
+            <div class="hero-main">
+                <div>
+                    <div class="badge-row">
+                        <span class="badge-lime">FARMING ACTIVE</span>
+                        <span class="badge-outline">TOKENIZED EQUITY PAIRS</span>
+                        <span class="badge-outline">24/7 ARB TARGET</span>
+                    </div>
+                    <h1 class="hero-title">
+                        MEME GEN <span class="accent">INDEX</span><br>
+                        <span class="stroke-word">ZERO-G</span> TERMINAL
+                    </h1>
+                    <p class="hero-subtitle">
+                        Autonomous Real-World Asset (RWA) liquidity index coupling high-velocity meme assets directly against tokenized Solana equity pairs (<strong>NVDAX</strong>, <strong>TSLAX</strong>, <strong>GMEX</strong>, <strong>SPYX</strong>). Built for continuous 24/7 cross-market programmatic arbitrage with zero human deployment capital retained.
+                    </p>
+                </div>
+
+                <div class="allocation-module">
+                    <div class="allocation-header">
+                        <span>INDEX WEIGHT DISTRIBUTION MATRIX (CLICK TO INSPECT)</span>
+                        <span>TOTAL WEIGHT: 100.0%</span>
+                    </div>
+                    <div class="allocation-bar" role="group" aria-label="Index weight distribution">
+                        <button type="button" class="alloc-segment active" style="flex: 35 1 0%;" data-rwa="NVDAX" onclick="selectAsset('NVDAX')">
+                            <span>$NVYDA</span><span class="pct">35%</span>
+                        </button>
+                        <button type="button" class="alloc-segment" style="flex: 25 1 0%;" data-rwa="TSLAX" onclick="selectAsset('TSLAX')">
+                            <span>$CYBER</span><span class="pct">25%</span>
+                        </button>
+                        <button type="button" class="alloc-segment" style="flex: 25 1 0%;" data-rwa="GMEX" onclick="selectAsset('GMEX')">
+                            <span>$ROAR</span><span class="pct">25%</span>
+                        </button>
+                        <button type="button" class="alloc-segment" style="flex: 15 1 0%;" data-rwa="SPYX" onclick="selectAsset('SPYX')">
+                            <span>$PRINTER</span><span class="pct">15%</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <pre id="spec-output" class="spec-pre"></pre>
+
+            <aside class="hero-sidebar" aria-label="Key Performance Metrics">
+                <div class="kpi-cell">
+                    <div class="kpi-label">
+                        <span>TERMINAL GRAVITY</span>
+                        <span>[CORE-01]</span>
+                    </div>
+                    <div class="kpi-value lime">0.00G</div>
+                    <div class="kpi-sub">
+                        <span>FRICTIONLESS EXECUTION</span>
+                        <span class="kpi-delta">NOMINAL ●</span>
+                    </div>
+                </div>
+
+                <div class="kpi-cell">
+                    <div class="kpi-label">
+                        <span>CREATOR REVENUE YIELD</span>
+                        <span>[VAULT-02]</span>
+                    </div>
+                    <div class="kpi-value">0.30%</div>
+                    <div class="kpi-sub">
+                        <span>AUTOMATIC FEE VAULT</span>
+                        <span class="kpi-delta">AUTO-COMPOUND</span>
+                    </div>
+                </div>
+
+                <div class="kpi-cell">
+                    <div class="kpi-label">
+                        <span>CROSS-MARKET ARB SPREAD</span>
+                        <span>[ORACLE-03]</span>
+                    </div>
+                    <div class="kpi-value" id="live-spread">+0.42%</div>
+                    <div class="kpi-sub">
+                        <span>SOLANA RWA VS NASDAQ</span>
+                        <span class="kpi-delta" id="live-ticks">24/7 BOT TARGET</span>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+        <!-- Section 02: Constituent Matrix Data Table -->
+        <section class="matrix-section" aria-labelledby="matrix-heading">
+            <div class="section-meta">
+                <span id="matrix-heading"><span class="coord">02 //</span> RWA CONSTITUENT EXECUTION MATRIX</span>
+                <span>CLICK ANY ROW TO LOAD ASSET CODE SECTOR SPEC</span>
+            </div>
+
+            <div tabindex="0" role="region" aria-labelledby="matrix-table-caption" class="table-wrapper">
+                <table>
+                    <caption id="matrix-table-caption">Meme Gen Index Constituent RWA Execution Matrix</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Ticker</th>
+                            <th scope="col">Asset Matrix Name</th>
+                            <th scope="col">RWA Target Equity</th>
+                            <th scope="col">24h Intraday Curve</th>
+                            <th scope="col">Arb Spread</th>
+                            <th scope="col">Index Weight</th>
+                            <th scope="col" style="text-align: end;">Terminal Launchpad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="selected-row" data-row-rwa="NVDAX" onclick="selectAsset('NVDAX')">
+                            <th scope="row">
+                                <div class="ticker-cell">
+                                    <span class="idx-num">01</span>
+                                    <span class="ticker-symbol">$NVYDA</span>
+                                </div>
+                            </th>
+                            <td>
+                                <div class="asset-name-wrap">
+                                    <span class="asset-title">NVYDA AI OVERLORD</span>
+                                    <span class="asset-sub">SECTOR: AI COMPUTE / SEMICONDUCTOR</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="rwa-badge"><span class="pair-tag">NVDAX</span> Nvidia Corp</span>
+                            </td>
+                            <td>
+                                <svg class="sparkline-svg" viewBox="0 0 110 32" fill="none" aria-label="Upward intraday trend">
+                                    <path d="M2 26 L18 22 L34 25 L50 15 L66 17 L82 8 L98 11 L108 4" stroke="#D4FF00" stroke-width="1.75" stroke-linecap="square"/>
+                                </svg>
+                            </td>
+                            <td class="spread-cell">
+                                <span class="spread-val" data-spread-cell="NVDAX">+0.48%</span>
+                                <span class="spread-sub">MM POOL ACTIVE</span>
+                            </td>
+                            <td>
+                                <div class="weight-wrap">
+                                    <span class="weight-num">35%</span>
+                                    <div class="weight-track"><div class="weight-fill" style="inline-size: 35%;"></div></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-group" onclick="event.stopPropagation();">
+                                    <button type="button" class="btn-kinetic btn-lime" onclick="selectAsset('NVDAX', true)">Copy Spec</button>
+                                    <a href="https://pump.fun" target="_blank" rel="noopener noreferrer" class="btn-kinetic btn-outline">Access Pool ↗</a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr data-row-rwa="TSLAX" onclick="selectAsset('TSLAX')">
+                            <th scope="row">
+                                <div class="ticker-cell">
+                                    <span class="idx-num">02</span>
+                                    <span class="ticker-symbol">$CYBER</span>
+                                </div>
+                            </th>
+                            <td>
+                                <div class="asset-name-wrap">
+                                    <span class="asset-title">ELON'S CYBERTRUCK EXTINCT</span>
+                                    <span class="asset-sub">SECTOR: AUTONOMOUS MOBILITY / ROBOTICS</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="rwa-badge"><span class="pair-tag">TSLAX</span> Tesla Inc</span>
+                            </td>
+                            <td>
+                                <svg class="sparkline-svg" viewBox="0 0 110 32" fill="none" aria-label="Volatile upward intraday trend">
+                                    <path d="M2 24 L18 14 L34 21 L50 12 L66 19 L82 9 L98 13 L108 6" stroke="#D4FF00" stroke-width="1.75" stroke-linecap="square"/>
+                                </svg>
+                            </td>
+                            <td class="spread-cell">
+                                <span class="spread-val" data-spread-cell="TSLAX">+0.61%</span>
+                                <span class="spread-sub">MM POOL ACTIVE</span>
+                            </td>
+                            <td>
+                                <div class="weight-wrap">
+                                    <span class="weight-num">25%</span>
+                                    <div class="weight-track"><div class="weight-fill" style="inline-size: 25%;"></div></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-group" onclick="event.stopPropagation();">
+                                    <button type="button" class="btn-kinetic btn-lime" onclick="selectAsset('TSLAX', true)">Copy Spec</button>
+                                    <a href="https://pump.fun" target="_blank" rel="noopener noreferrer" class="btn-kinetic btn-outline">Access Pool ↗</a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr data-row-rwa="GMEX" onclick="selectAsset('GMEX')">
+                            <th scope="row">
+                                <div class="ticker-cell">
+                                    <span class="idx-num">03</span>
+                                    <span class="ticker-symbol">$ROAR</span>
+                                </div>
+                            </th>
+                            <td>
+                                <div class="asset-name-wrap">
+                                    <span class="asset-title">ROARING DIAMOND CAT</span>
+                                    <span class="asset-sub">SECTOR: RETAIL VOLATILITY / SQUEEZE ENGINE</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="rwa-badge"><span class="pair-tag">GMEX</span> GameStop Corp</span>
+                            </td>
+                            <td>
+                                <svg class="sparkline-svg" viewBox="0 0 110 32" fill="none" aria-label="High momentum breakout trend">
+                                    <path d="M2 28 L18 26 L34 27 L50 8 L66 14 L82 5 L98 9 L108 3" stroke="#D4FF00" stroke-width="1.75" stroke-linecap="square"/>
+                                </svg>
+                            </td>
+                            <td class="spread-cell">
+                                <span class="spread-val" data-spread-cell="GMEX">+0.84%</span>
+                                <span class="spread-sub">HIGH VOLATILITY</span>
+                            </td>
+                            <td>
+                                <div class="weight-wrap">
+                                    <span class="weight-num">25%</span>
+                                    <div class="weight-track"><div class="weight-fill" style="inline-size: 25%;"></div></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-group" onclick="event.stopPropagation();">
+                                    <button type="button" class="btn-kinetic btn-lime" onclick="selectAsset('GMEX', true)">Copy Spec</button>
+                                    <a href="https://pump.fun" target="_blank" rel="noopener noreferrer" class="btn-kinetic btn-outline">Access Pool ↗</a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr data-row-rwa="SPYX" onclick="selectAsset('SPYX')">
+                            <th scope="row">
+                                <div class="ticker-cell">
+                                    <span class="idx-num">04</span>
+                                    <span class="ticker-symbol">$PRINTER</span>
+                                </div>
+                            </th>
+                            <td>
+                                <div class="asset-name-wrap">
+                                    <span class="asset-title">MONEY PRINTER BRRR</span>
+                                    <span class="asset-sub">SECTOR: MACRO LIQUIDITY BENCHMARK</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="rwa-badge"><span class="pair-tag">SPYX</span> S&amp;P 500 Index</span>
+                            </td>
+                            <td>
+                                <svg class="sparkline-svg" viewBox="0 0 110 32" fill="none" aria-label="Steady macro upward curve">
+                                    <path d="M2 25 L18 23 L34 20 L50 18 L66 15 L82 12 L98 10 L108 7" stroke="#D4FF00" stroke-width="1.75" stroke-linecap="square"/>
+                                </svg>
+                            </td>
+                            <td class="spread-cell">
+                                <span class="spread-val" data-spread-cell="SPYX">+0.19%</span>
+                                <span class="spread-sub">MACRO ANCHOR</span>
+                            </td>
+                            <td>
+                                <div class="weight-wrap">
+                                    <span class="weight-num">15%</span>
+                                    <div class="weight-track"><div class="weight-fill" style="inline-size: 15%;"></div></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-group" onclick="event.stopPropagation();">
+                                    <button type="button" class="btn-kinetic btn-lime" onclick="selectAsset('SPYX', true)">Copy Spec</button>
+                                    <a href="https://pump.fun" target="_blank" rel="noopener noreferrer" class="btn-kinetic btn-outline">Access Pool ↗</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 03: Asset Code Sector Payload & Routing Inspector -->
+        <div class="section-meta">
+            <span><span class="coord">03 //</span> ASSET CODE SECTOR PAYLOAD &amp; ROUTING TOPOLOGY</span>
+            <span>READY FOR PUMP.FUN CUSTOM PAIR DEPLOYMENT</span>
         </div>
 
+        <section class="inspector-bento" aria-label="Asset Code Sector Specification Generator">
+            <div class="inspector-left">
+                <div>
+                    <span class="badge-lime" id="inspector-badge">CONSTITUENT 01 // 35% WEIGHT</span>
+                    <h2 class="inspector-title" id="inspector-heading">$NVYDA ⇄ NVDAX</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-block-top: 0.5rem; line-height: 1.5;" id="inspector-desc">
+                        Programmatic liquidity pair coupling NVYDA AI OVERLORD directly against tokenized Nvidia Corp (NVDAX) on Solana.
+                    </p>
+                </div>
+
+                <div class="routing-diagram" aria-label="Liquidity routing topology">
+                    <div class="route-node">
+                        <span class="node-label">INDEX ASSET</span>
+                        <span class="node-val" id="route-meme">$NVYDA</span>
+                    </div>
+                    <div class="route-arrow">
+                        PUMP.FUN<br>⇄<br>POOL
+                    </div>
+                    <div class="route-node">
+                        <span class="node-label">RWA QUOTE</span>
+                        <span class="node-val" id="route-rwa">NVDAX</span>
+                    </div>
+                </div>
+
+                <div class="spec-meta-list">
+                    <div class="spec-meta-item">
+                        <span>SETTLEMENT LAYER</span>
+                        <strong>SOLANA RWA EQUITIES</strong>
+                    </div>
+                    <div class="spec-meta-item">
+                        <span>OPERATIONAL CORE</span>
+                        <strong style="color: var(--accent-lime);">0.00G ZERO-GRAVITY</strong>
+                    </div>
+                    <div class="spec-meta-item">
+                        <span>CREATOR FEE VAULT</span>
+                        <strong>0.30% AUTO-YIELD</strong>
+                    </div>
+                    <div class="spec-meta-item">
+                        <span>ARB WINDOW</span>
+                        <strong>24/7 CROSS-MARKET</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="inspector-right">
+                <div class="selector-tabs" role="tablist" aria-label="Select Constituent Payload">
+                    <button type="button" class="tab-pill active" data-tab-rwa="NVDAX" onclick="selectAsset('NVDAX')">$NVYDA / NVDAX</button>
+                    <button type="button" class="tab-pill" data-tab-rwa="TSLAX" onclick="selectAsset('TSLAX')">$CYBER / TSLAX</button>
+                    <button type="button" class="tab-pill" data-tab-rwa="GMEX" onclick="selectAsset('GMEX')">$ROAR / GMEX</button>
+                    <button type="button" class="tab-pill" data-tab-rwa="SPYX" onclick="selectAsset('SPYX')">$PRINTER / SPYX</button>
+                </div>
+
+                <div class="terminal-box">
+                    <div class="terminal-toolbar">
+                        <span>PAYLOAD // [MEME GEN INDEX MATRIX: ASSET CODE SECTOR]</span>
+                        <button type="button" id="copy-payload-btn" class="btn-kinetic btn-lime" onclick="copyCurrentSpec()">COPY PAYLOAD</button>
+                    </div>
+                    <div id="spec-output"></div>
+                </div>
+            </div>
+        </section>
+
         <footer>
-            <p>&copy; 2026 Meme Gen Index. Structural data streams simulated via underlying Solana equity pairs. Zero human deployment capital retained.</p>
+            <span>&copy; 2026 MEME GEN INDEX // ZERO-G RWA EXECUTION TERMINAL</span>
+            <span>STRUCTURAL DATA STREAMS SIMULATED VIA SOLANA TOKENIZED EQUITY PAIRS • ZERO HUMAN CAPITAL RETAINED</span>
         </footer>
+    </main>
+
+    <div id="copy-toast" popover="manual" role="status" aria-live="polite">
+        SPEC PAYLOAD COPIED TO CLIPBOARD
     </div>
 
     <script>
+        const ASSETS = {
+            NVDAX: {
+                rank: '01',
+                meme: '$NVYDA',
+                name: 'NVYDA AI OVERLORD',
+                rwa: 'NVDAX',
+                equity: 'Nvidia Corp',
+                weight: '35%',
+                desc: 'Programmatic liquidity pair coupling NVYDA AI OVERLORD directly against tokenized Nvidia Corp (NVDAX) on Solana.'
+            },
+            TSLAX: {
+                rank: '02',
+                meme: '$CYBER',
+                name: "ELON'S CYBERTRUCK EXTINCT",
+                rwa: 'TSLAX',
+                equity: 'Tesla Inc',
+                weight: '25%',
+                desc: "Programmatic liquidity pair coupling ELON'S CYBERTRUCK EXTINCT directly against tokenized Tesla Inc (TSLAX) on Solana."
+            },
+            GMEX: {
+                rank: '03',
+                meme: '$ROAR',
+                name: 'ROARING DIAMOND CAT',
+                rwa: 'GMEX',
+                equity: 'GameStop Corp',
+                weight: '25%',
+                desc: 'Programmatic liquidity pair coupling ROARING DIAMOND CAT directly against tokenized GameStop Corp (GMEX) on Solana.'
+            },
+            SPYX: {
+                rank: '04',
+                meme: '$PRINTER',
+                name: 'MONEY PRINTER BRRR',
+                rwa: 'SPYX',
+                equity: 'S&P 500 Index',
+                weight: '15%',
+                desc: 'Programmatic liquidity pair coupling MONEY PRINTER BRRR directly against tokenized S&P 500 Index (SPYX) on Solana.'
+            }
+        };
+
         let currentRwa = 'NVDAX';
+        let toastTimer = null;
 
         function buildSpecText(rwaTicker) {
             const dashboardUrl = 'https://cjsgraphix.github.io/meme-gen-index/';
@@ -370,12 +1284,28 @@ Automated RWA index asset tracking underlying equity metrics. 24/7 cross-market 
 [Index Dashboard Access: ${dashboardUrl}]`;
         }
 
-        function selectAsset(rwaTicker, memeTicker, shouldCopy) {
+        function selectAsset(rwaTicker, shouldCopy = false) {
+            const asset = ASSETS[rwaTicker];
+            if (!asset) return;
             currentRwa = rwaTicker;
+
             document.getElementById('spec-output').textContent = buildSpecText(rwaTicker);
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.rwa === rwaTicker);
+            document.getElementById('inspector-badge').textContent = `CONSTITUENT ${asset.rank} // ${asset.weight} WEIGHT`;
+            document.getElementById('inspector-heading').textContent = `${asset.meme} ⇄ ${asset.rwa}`;
+            document.getElementById('inspector-desc').textContent = asset.desc;
+            document.getElementById('route-meme').textContent = asset.meme;
+            document.getElementById('route-rwa').textContent = asset.rwa;
+
+            document.querySelectorAll('[data-tab-rwa]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tabRwa === rwaTicker);
             });
+            document.querySelectorAll('.alloc-segment').forEach(seg => {
+                seg.classList.toggle('active', seg.dataset.rwa === rwaTicker);
+            });
+            document.querySelectorAll('[data-row-rwa]').forEach(row => {
+                row.classList.toggle('selected-row', row.dataset.rowRwa === rwaTicker);
+            });
+
             if (shouldCopy) {
                 copyCurrentSpec();
             }
@@ -384,14 +1314,44 @@ Automated RWA index asset tracking underlying equity metrics. 24/7 cross-market 
         function copyCurrentSpec() {
             const text = document.getElementById('spec-output').textContent;
             navigator.clipboard.writeText(text).then(() => {
-                const btn = document.getElementById('copy-spec-btn');
-                const original = btn.textContent;
-                btn.textContent = 'Copied!';
-                setTimeout(() => { btn.textContent = original; }, 1500);
+                const btn = document.getElementById('copy-payload-btn');
+                btn.textContent = 'COPIED ✓';
+                setTimeout(() => { btn.textContent = 'COPY PAYLOAD'; }, 1600);
+
+                const toast = document.getElementById('copy-toast');
+                if (toast && typeof toast.showPopover === 'function') {
+                    toast.textContent = `COPIED ${currentRwa} SPEC PAYLOAD`;
+                    toast.showPopover();
+                    clearTimeout(toastTimer);
+                    toastTimer = setTimeout(() => toast.hidePopover(), 2200);
+                }
             });
         }
 
-        selectAsset('NVDAX', '$NVYDA', false);
+        // Live atomic UTC clock & simulated micro-arbitrage ticks
+        function updateClock() {
+            const now = new Date();
+            const iso = now.toISOString().slice(11, 22);
+            const el = document.getElementById('live-clock');
+            if (el) el.textContent = iso;
+        }
+        setInterval(updateClock, 80);
+        updateClock();
+
+        setInterval(() => {
+            const baseSpreads = { NVDAX: 0.48, TSLAX: 0.61, GMEX: 0.84, SPYX: 0.19 };
+            Object.keys(baseSpreads).forEach(key => {
+                const jitter = (Math.random() * 0.08 - 0.04);
+                const val = Math.max(0.05, baseSpreads[key] + jitter).toFixed(2);
+                const cell = document.querySelector(`[data-spread-cell="${key}"]`);
+                if (cell) cell.textContent = `+${val}%`;
+            });
+            const heroSpread = (0.42 + (Math.random() * 0.06 - 0.03)).toFixed(2);
+            const heroEl = document.getElementById('live-spread');
+            if (heroEl) heroEl.textContent = `+${heroSpread}%`;
+        }, 2400);
+
+        selectAsset('NVDAX', false);
     </script>
 </body>
 </html>
