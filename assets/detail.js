@@ -17,7 +17,7 @@ import {
   bindImages,
   coinMark,
   isFetchableMint,
-} from "./market.js";
+} from "./market.js?v=20261108b";
 
 const app = document.getElementById("app");
 const badge = document.getElementById("sample-badge");

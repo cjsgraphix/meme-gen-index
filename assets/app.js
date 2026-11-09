@@ -22,7 +22,7 @@ import {
   bindCopy,
   bindImages,
   coinMark,
-} from "./market.js";
+} from "./market.js?v=20261108b";
 
 const NARROW = window.matchMedia("(max-width: 1080px)");
 
@@ -203,7 +203,7 @@ function render() {
       </aside>
     </section>
 
-    <section class="rh-tickers-section" aria-label="Paired tokenized stocks">
+    <section class="rh-tickers-section" id="paired-equities" aria-label="Paired tokenized stocks">
       <div class="section-head">
         <h2>Paired Stock Tokens</h2>
         <span class="rh-section-sub">Underlying quote assets via Solana Tokenized Equities</span>
