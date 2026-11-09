@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0e0f11">
+  <meta name="description" content="Coin detail for a pump.fun market quoted in a tokenized stock.">
+  <title>Coin · MemeGenIndex</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">MemeGen<span class="brand-index">Index</span></span>
+      </a>
+      <nav class="nav" aria-label="Sections">
+        <a href="index.html#overview">Overview</a>
+        <a href="index.html#coins">Coins</a>
+        <a href="index.html#how">How it works</a>
+      </nav>
+      <p class="badge" id="sample-badge">Sample data</p>
+    </div>
+  </header>
+  <main class="wrap page" id="content">
+    <noscript><p class="state">JavaScript is required to load data/coins.json.</p></noscript>
+    <div id="app"><p class="state">Loading the coin…</p></div>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p class="footer-name">MemeGenIndex</p>
+      <p>Not investment advice. This site is a personal record of coins its owner launched. It is not an offer to buy or sell any token, stock, or other asset.</p>
+      <p>Tokenized stocks are subject to the issuer’s jurisdiction restrictions and may be unavailable where you live. Prices, market caps, and creator-fee marks may be delayed or wrong. While the sample badge is up, coin figures are illustrative data, not live markets.</p>
+      <p class="footer-meta">Pair quotes from <a href="https://dexscreener.com" rel="noopener noreferrer">DexScreener</a> when the request succeeds, otherwise from data/coins.json. Charts by TradingView Lightweight Charts.</p>
+    </div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.2/dist/lightweight-charts.standalone.production.js"></script>
+  <script type="module" src="assets/detail.js"></script>
+</body>
+</html>
