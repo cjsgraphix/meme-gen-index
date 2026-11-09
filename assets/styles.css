@@ -781,7 +781,7 @@ h2 {
 .book-head,
 .book-row {
   display: grid;
-  grid-template-columns: minmax(200px, 1.8fr) minmax(116px, 1.1fr) 116px 96px 110px 140px 112px 96px;
+  grid-template-columns: minmax(190px, 1.7fr) minmax(110px, 1fr) 112px 96px 106px 136px 108px 148px;
   column-gap: 12px;
   align-items: center;
   padding-left: 20px;
@@ -1035,6 +1035,244 @@ h2 {
 
 .narrow-label {
   display: none;
+}
+
+.rh-trade-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.rh-buy-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #000000;
+  background: var(--up);
+  border: 1px solid var(--up);
+  transition: filter 140ms ease, transform 120ms ease;
+}
+
+.rh-buy-pill:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.rh-pair-buy-btn {
+  margin-top: 2px;
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--up);
+  background: color-mix(in oklab, var(--up), transparent 90%);
+  border: 1px solid color-mix(in oklab, var(--up), transparent 72%);
+  transition: all 140ms ease;
+}
+
+.rh-pair-buy-btn:hover {
+  background: var(--up);
+  border-color: var(--up);
+  color: #000000;
+}
+
+.rh-cta-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 40px;
+  margin-top: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 999px;
+  transition: border-color 140ms ease, color 140ms ease;
+}
+
+.rh-cta-secondary:hover {
+  border-color: var(--up);
+  color: var(--up);
+}
+
+.rh-ref-mini {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.rh-ref-mini-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+
+/* Native Modal Swap Dialog & Scroll Containment */
+dialog.rh-swap-dialog {
+  width: min(480px, calc(100% - 24px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  background: var(--bg-elev);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+}
+
+dialog.rh-swap-dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog.rh-swap-dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background-color: rgba(3, 5, 8, 0.76);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.rh-swap-shell {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rh-swap-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rh-swap-heading {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.rh-swap-sub {
+  font-size: 12.5px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  line-height: 1.45;
+}
+
+.rh-swap-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-card);
+  color: var(--text-dim);
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+}
+
+.rh-swap-close:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.rh-swap-route-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.rh-swap-route-pill strong {
+  color: var(--up);
+}
+
+.rh-jup-wrap {
+  min-height: 390px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.rh-jup-target {
+  width: 100%;
+  min-height: 390px;
+}
+
+.rh-jup-loading,
+.rh-jup-fallback {
+  padding: 36px 20px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.rh-ref-bar {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rh-ref-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+}
+
+.rh-ref-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rh-ref-chip {
+  flex: 1 1 auto;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--bg-card);
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+  transition: all 140ms ease;
+}
+
+.rh-ref-chip:hover {
+  border-color: var(--up);
+  color: var(--up);
+}
+
+.rh-ref-chip.rh-ref-pump {
+  color: var(--up);
+  border-color: color-mix(in oklab, var(--up), transparent 65%);
+  background: color-mix(in oklab, var(--up), transparent 90%);
 }
 
 .rh-trade-btn {

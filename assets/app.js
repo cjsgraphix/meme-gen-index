@@ -23,7 +23,9 @@ import {
   bindImages,
   coinMark,
   mountAmbientFX,
-} from "./market.js?v=20261108c";
+  bindSwapTriggers,
+  buildReferralUrls,
+} from "./market.js?v=20261108d";
 
 const NARROW = window.matchMedia("(max-width: 1080px)");
 
@@ -74,6 +76,11 @@ const state = {
 bindCopy(app);
 bindImages(app);
 mountAmbientFX();
+bindSwapTriggers(
+  app,
+  () => state.book,
+  () => state.live
+);
 app.addEventListener("click", onClick);
 app.addEventListener("change", onChange);
 NARROW.addEventListener("change", syncNarrowLabels);
@@ -463,6 +470,7 @@ function pairedStripMarkup(book, live) {
             <span class="rh-pair-price">${esc(pair.priceUsd == null ? "—" : formatUsd(pair.priceUsd, 2))}</span>
             <span class="rh-pill ${pctClass(chg)}">${arrow} ${esc(formatPct(chg))}</span>
           </div>
+          <button type="button" class="rh-pair-buy-btn" data-swap-pair="${esc(pair.symbol)}">Swap ${esc(pair.symbol)}</button>
         </div>
       `;
     })
@@ -603,10 +611,12 @@ function rowMarkup(row) {
   const arrow = change > 0 ? "▲" : change < 0 ? "▼" : "";
   const fees = feeUsd(raw, pair);
   const href = `coin.html?mint=${encodeURIComponent(raw.mint || "")}`;
+  const urls = buildReferralUrls(state.book, raw, pair);
   const market = safeHttpUrl(raw.pumpUrl);
-  const marketHtml = market
-    ? `<a class="rh-trade-btn" href="${esc(market)}" target="_blank" rel="noopener noreferrer">pump.fun<span aria-hidden="true"> ↗</span><span class="vh"> (opens in a new tab)</span></a>`
-    : `<span class="muted" title="Sample entry. Set pumpUrl in data/coins.json.">—</span>`;
+  const marketHtml = `<div class="rh-trade-actions">
+    <button type="button" class="rh-buy-pill" data-swap-mint="${esc(raw.mint || "")}">Buy</button>
+    ${market ? `<a class="rh-trade-btn" href="${esc(urls.pumpUrl)}" target="_blank" rel="noopener noreferrer" title="Open on pump.fun">pump.fun<span aria-hidden="true"> ↗</span></a>` : ""}
+  </div>`;
   const price = finiteOrNull(coin.priceUsd);
   const cap = finiteOrNull(coin.marketCapUsd);
   const qty = finiteOrNull(raw.creatorFeesToken);

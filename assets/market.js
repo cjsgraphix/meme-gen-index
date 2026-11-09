@@ -756,3 +756,248 @@ export function mountAmbientFX() {
     requestAnimationFrame(tick);
   }
 }
+
+const SOL_MINT = "So11111111111111111111111111111111111111112";
+let jupScriptPromise = null;
+
+function loadJupiterScript() {
+  if (window.Jupiter && typeof window.Jupiter.init === "function") {
+    return Promise.resolve(window.Jupiter);
+  }
+  if (jupScriptPromise) return jupScriptPromise;
+  jupScriptPromise = new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://terminal.jup.ag/main-v3.js";
+    script.async = true;
+    script.onload = () => resolve(window.Jupiter || null);
+    script.onerror = () => resolve(null);
+    document.head.appendChild(script);
+  });
+  return jupScriptPromise;
+}
+
+export function buildReferralUrls(book, coinOrPair, pairAsset) {
+  const ref = book?.referral || {};
+  const isRealCoin = coinOrPair && !coinOrPair.placeholder && isFetchableMint(coinOrPair.mint);
+  const targetMint = isRealCoin
+    ? coinOrPair.mint
+    : isFetchableMint(pairAsset?.mint)
+      ? pairAsset.mint
+      : isFetchableMint(coinOrPair?.mint)
+        ? coinOrPair.mint
+        : SOL_MINT;
+
+  // Pump.fun URL with referral code if configured
+  let pumpBase = safeHttpUrl(coinOrPair?.pumpUrl) || (isRealCoin ? `https://pump.fun/coin/${targetMint}` : "https://pump.fun");
+  if (ref.pumpRef) {
+    try {
+      const u = new URL(pumpBase);
+      u.searchParams.set("ref", String(ref.pumpRef).trim());
+      pumpBase = u.href;
+    } catch {
+      /* keep base */
+    }
+  }
+
+  const axiomCode = String(ref.axiomRef || "").trim();
+  const axiomUrl = axiomCode
+    ? `https://axiom.trade/t/${encodeURIComponent(targetMint)}/@${encodeURIComponent(axiomCode)}`
+    : `https://axiom.trade/t/${encodeURIComponent(targetMint)}`;
+
+  const bullxCode = String(ref.bullxRef || "").trim();
+  const bullxUrl = bullxCode
+    ? `https://neo.bullx.io/terminal?chainId=1399811149&address=${encodeURIComponent(targetMint)}&r=${encodeURIComponent(bullxCode)}`
+    : `https://neo.bullx.io/terminal?chainId=1399811149&address=${encodeURIComponent(targetMint)}`;
+
+  const gmgnCode = String(ref.gmgnRef || "").trim();
+  const gmgnUrl = gmgnCode
+    ? `https://gmgn.ai/sol/token/${encodeURIComponent(gmgnCode)}_${encodeURIComponent(targetMint)}`
+    : `https://gmgn.ai/sol/token/${encodeURIComponent(targetMint)}`;
+
+  return {
+    targetMint,
+    isRealCoin,
+    pumpUrl: pumpBase,
+    axiomUrl,
+    bullxUrl,
+    gmgnUrl,
+  };
+}
+
+function ensureSwapDialog() {
+  let dialog = document.getElementById("rh-swap-modal");
+  if (dialog) return dialog;
+
+  dialog = document.createElement("dialog");
+  dialog.id = "rh-swap-modal";
+  dialog.className = "rh-swap-dialog";
+  dialog.setAttribute("closedby", "any");
+  dialog.setAttribute("aria-labelledby", "rh-swap-title");
+
+  dialog.innerHTML = `
+    <div class="rh-swap-shell">
+      <div class="rh-swap-head">
+        <div>
+          <span class="rh-pair-tag" id="rh-swap-kicker">IN-SITE EXECUTION</span>
+          <h2 id="rh-swap-title" class="rh-swap-heading">Buy / Swap</h2>
+          <p id="rh-swap-sub" class="rh-swap-sub"></p>
+        </div>
+        <form method="dialog">
+          <button type="submit" class="rh-swap-close" aria-label="Close trade modal">✕</button>
+        </form>
+      </div>
+
+      <div class="rh-swap-route-pill" id="rh-swap-route"></div>
+
+      <div class="rh-jup-wrap">
+        <div id="jup-integrated-target" class="rh-jup-target">
+          <p class="rh-jup-loading">Initializing in-site Solana swap router…</p>
+        </div>
+      </div>
+
+      <div class="rh-ref-bar">
+        <span class="rh-ref-label">Or execute via external referral terminal:</span>
+        <div class="rh-ref-links" id="rh-ref-links"></div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(dialog);
+
+  // Mandatory Safari / legacy fallback for light-dismiss when closedBy is unsupported
+  if (!("closedBy" in HTMLDialogElement.prototype)) {
+    dialog.addEventListener("click", (event) => {
+      if (event.target !== dialog) return;
+      const rect = dialog.getBoundingClientRect();
+      const isDialogContent =
+        rect.top <= event.clientY &&
+        event.clientY <= rect.top + rect.height &&
+        rect.left <= event.clientX &&
+        event.clientX <= rect.left + rect.width;
+      if (isDialogContent) return;
+      dialog.close();
+    });
+  }
+
+  return dialog;
+}
+
+export async function openSwapModal(book, coin, pair) {
+  const dialog = ensureSwapDialog();
+  const urls = buildReferralUrls(book, coin, pair);
+  const titleEl = document.getElementById("rh-swap-title");
+  const kickerEl = document.getElementById("rh-swap-kicker");
+  const subEl = document.getElementById("rh-swap-sub");
+  const routeEl = document.getElementById("rh-swap-route");
+  const refLinksEl = document.getElementById("rh-ref-links");
+  const targetEl = document.getElementById("jup-integrated-target");
+
+  const pairMint = isFetchableMint(pair?.mint) ? pair.mint : SOL_MINT;
+  const inputMint = urls.isRealCoin ? pairMint : SOL_MINT;
+  const outputMint = urls.targetMint;
+
+  if (kickerEl) {
+    kickerEl.textContent = urls.isRealCoin
+      ? `${coin.ticker || "COIN"} ⇄ ${pair?.symbol || "RWA"} CUSTOM PAIR`
+      : `ACQUIRE QUOTE STOCK · ${pair?.symbol || "RWA"}`;
+  }
+  if (titleEl) {
+    titleEl.textContent = urls.isRealCoin
+      ? `Buy ${coin?.name || coin?.ticker || "Coin"}`
+      : `Swap ${pair?.symbol || "Paired Stock"}${coin?.ticker ? ` (Quote Asset for $${coin.ticker})` : ""}`;
+  }
+  if (subEl) {
+    subEl.textContent = urls.isRealCoin
+      ? `Direct on-chain swap routed into ${coin.ticker} (${pair?.symbol} pair). Creator fees settle in ${pair?.symbol}.`
+      : `$${coin?.ticker || "This coin"} is currently in sample/pre-launch state. You can acquire its underlying quote stock (${pair?.symbol}) right here, or launch via pump.fun.`;
+  }
+  if (routeEl) {
+    const inSym = urls.isRealCoin ? pair?.symbol || "SOL" : "SOL";
+    const outSym = urls.isRealCoin ? `$${coin?.ticker}` : pair?.symbol || "TOKEN";
+    const feeBps = Number(book?.referral?.feeBps) || 0;
+    const refWallet = String(book?.referral?.wallet || "").trim();
+    routeEl.innerHTML = `
+      <span>Route: <strong>${esc(inSym)} → ${esc(outSym)}</strong></span>
+      <span>${refWallet && feeBps > 0 ? `Referral Fee: <strong>${(feeBps / 100).toFixed(2)}%</strong>` : `Settlement: <strong>Solana Mainnet</strong>`}</span>
+    `;
+  }
+  if (refLinksEl) {
+    refLinksEl.innerHTML = `
+      <a href="${esc(urls.pumpUrl)}" target="_blank" rel="noopener noreferrer" class="rh-ref-chip rh-ref-pump">pump.fun ↗</a>
+      <a href="${esc(urls.axiomUrl)}" target="_blank" rel="noopener noreferrer" class="rh-ref-chip">Axiom ↗</a>
+      <a href="${esc(urls.bullxUrl)}" target="_blank" rel="noopener noreferrer" class="rh-ref-chip">BullX ↗</a>
+      <a href="${esc(urls.gmgnUrl)}" target="_blank" rel="noopener noreferrer" class="rh-ref-chip">GMGN ↗</a>
+    `;
+  }
+
+  if (!dialog.open) {
+    dialog.showModal();
+  }
+
+  if (targetEl) {
+    targetEl.innerHTML = `<p class="rh-jup-loading">Loading embedded Jupiter swap terminal…</p>`;
+  }
+
+  const jup = await loadJupiterScript();
+  if (!jup || typeof jup.init !== "function") {
+    if (targetEl) {
+      targetEl.innerHTML = `<div class="rh-jup-fallback">
+        <p>Embedded swap widget requires an active mainnet browser connection. Use the referral buttons below or open directly on <a class="link" href="${esc(urls.pumpUrl)}" target="_blank" rel="noopener noreferrer">pump.fun ↗</a>.</p>
+      </div>`;
+    }
+    return;
+  }
+
+  try {
+    targetEl.innerHTML = "";
+    const refWallet = String(book?.referral?.wallet || "").trim();
+    const feeBps = Number(book?.referral?.feeBps) || 0;
+    const formProps = {
+      initialInputMint: inputMint,
+      initialOutputMint: outputMint,
+    };
+    if (isFetchableMint(refWallet) && feeBps > 0) {
+      formProps.referralAccount = refWallet;
+      formProps.referralFee = feeBps;
+    }
+    jup.init({
+      displayMode: "integrated",
+      integratedTargetId: "jup-integrated-target",
+      endpoint: "https://api.mainnet-beta.solana.com",
+      defaultExplorer: "Solscan",
+      formProps,
+    });
+  } catch {
+    if (targetEl) {
+      targetEl.innerHTML = `<div class="rh-jup-fallback">
+        <p>Swap terminal ready via external router: <a class="link" href="${esc(urls.pumpUrl)}" target="_blank" rel="noopener noreferrer">Open on pump.fun ↗</a></p>
+      </div>`;
+    }
+  }
+}
+
+export function bindSwapTriggers(root, getBook, getLive) {
+  root.addEventListener("click", (event) => {
+    const btn = event.target.closest("button[data-swap-mint], button[data-swap-pair]");
+    if (!btn || !root.contains(btn)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const book = typeof getBook === "function" ? getBook() : null;
+    const live = typeof getLive === "function" ? getLive() : new Map();
+    if (!book) return;
+
+    const swapMint = btn.dataset.swapMint;
+    const swapPair = btn.dataset.swapPair;
+
+    if (swapMint) {
+      const raw = (book.coins || []).find((c) => c.mint === swapMint);
+      if (!raw) return;
+      const coin = viewCoin(raw, live);
+      const pair = pairView(book, raw.pair, live);
+      void openSwapModal(book, coin, pair);
+    } else if (swapPair) {
+      const pair = pairView(book, swapPair, live);
+      void openSwapModal(book, { placeholder: true, ticker: swapPair, name: pair.name }, pair);
+    }
+  });
+}

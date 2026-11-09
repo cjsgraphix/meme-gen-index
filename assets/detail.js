@@ -18,7 +18,9 @@ import {
   coinMark,
   isFetchableMint,
   mountAmbientFX,
-} from "./market.js?v=20261108c";
+  bindSwapTriggers,
+  buildReferralUrls,
+} from "./market.js?v=20261108d";
 
 const app = document.getElementById("app");
 const badge = document.getElementById("sample-badge");
@@ -26,6 +28,11 @@ const badge = document.getElementById("sample-badge");
 bindCopy(app);
 bindImages(app);
 mountAmbientFX();
+bindSwapTriggers(
+  app,
+  () => view.book,
+  () => view.live
+);
 
 const view = {
   book: null,
@@ -92,6 +99,7 @@ function render() {
   const date = formatAsOf(view.book.asOf);
   const pairLabel = pair.name ? `${pair.symbol} (${pair.name})` : pair.symbol;
   const market = safeHttpUrl(view.raw.pumpUrl);
+  const urls = buildReferralUrls(view.book, view.raw, pair);
   const headRight = view.book.sample !== false || series.synthetic ? "Illustrative Series" : "Historical Series";
   const caption = series.synthetic
     ? "Illustrative daily path drawn from the price and 24h change in data/coins.json. Not a live print."
@@ -141,11 +149,20 @@ function render() {
             <span class="rh-order-title">Trade ${esc(coin.ticker || "Coin")}</span>
             <span class="rh-order-pair">Pair: ${esc(pair.symbol)}</span>
           </div>
+          <button type="button" class="rh-cta-primary" data-swap-mint="${esc(view.raw.mint || "")}">Buy / Swap in Site</button>
           ${
             market
-              ? `<a class="rh-cta-primary" href="${esc(market)}" target="_blank" rel="noopener noreferrer">Open Pool on pump.fun ↗</a>`
-              : `<p class="pair-name">No pump.fun page yet. Set pumpUrl in data/coins.json once launched.</p>`
+              ? `<a class="rh-cta-secondary" href="${esc(urls.pumpUrl)}" target="_blank" rel="noopener noreferrer">Open Pool on pump.fun ↗</a>`
+              : `<p class="pair-name" style="margin-top: 8px;">No pump.fun page yet. Set pumpUrl in data/coins.json once launched.</p>`
           }
+          <div class="rh-ref-mini">
+            <span class="rh-ref-mini-label">Referral Terminals</span>
+            <div class="rh-ref-links">
+              <a href="${esc(urls.axiomUrl)}" target="_blank" rel="noopener noreferrer" class="rh-ref-chip">Axiom ↗</a>
+              <a href="${esc(urls.bullxUrl)}" target="_blank" rel="noopener noreferrer" class="rh-ref-chip">BullX ↗</a>
+              <a href="${esc(urls.gmgnUrl)}" target="_blank" rel="noopener noreferrer" class="rh-ref-chip">GMGN ↗</a>
+            </div>
+          </div>
           <div class="rh-order-stats">
             <div class="rh-stat-row">
               <span>Market Cap</span>

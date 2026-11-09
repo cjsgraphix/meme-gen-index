@@ -1,6 +1,14 @@
 {
   "sample": true,
   "asOf": "2026-11-08",
+  "referral": {
+    "wallet": "",
+    "feeBps": 50,
+    "pumpRef": "",
+    "axiomRef": "",
+    "bullxRef": "",
+    "gmgnRef": ""
+  },
   "pairedAssets": {
     "NVDAX": {
       "symbol": "NVDAX",
