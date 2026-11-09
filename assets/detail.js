@@ -17,13 +17,15 @@ import {
   bindImages,
   coinMark,
   isFetchableMint,
-} from "./market.js?v=20261108b";
+  mountAmbientFX,
+} from "./market.js?v=20261108c";
 
 const app = document.getElementById("app");
 const badge = document.getElementById("sample-badge");
 
 bindCopy(app);
 bindImages(app);
+mountAmbientFX();
 
 const view = {
   book: null,

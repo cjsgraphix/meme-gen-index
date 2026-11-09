@@ -544,3 +544,215 @@ function utcToday() {
 function isoDay(time) {
   return new Date(time).toISOString().slice(0, 10);
 }
+
+/**
+ * Interactive Zero-G Constellation & Cursor-Reactive Aurora Canvas + Card Specular Spotlight.
+ * Respects prefers-reduced-motion and provides a pause toggle in the header.
+ */
+export function mountAmbientFX() {
+  if (document.getElementById("rh-ambient-canvas")) return;
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let paused = reducedMotion.matches;
+
+  const canvas = document.createElement("canvas");
+  canvas.id = "rh-ambient-canvas";
+  canvas.className = "rh-ambient-canvas";
+  canvas.setAttribute("aria-hidden", "true");
+  document.body.prepend(canvas);
+
+  // Inject FX Pause/Play toggle button into header
+  const headerInner = document.querySelector(".header-inner");
+  let toggleBtn = null;
+  if (headerInner) {
+    toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "rh-fx-toggle";
+    toggleBtn.setAttribute("aria-pressed", String(!paused));
+    toggleBtn.textContent = paused ? "Ambient FX: Off" : "Ambient FX: Live";
+    toggleBtn.addEventListener("click", () => {
+      paused = !paused;
+      document.documentElement.dataset.fxPaused = String(paused);
+      toggleBtn.setAttribute("aria-pressed", String(!paused));
+      toggleBtn.textContent = paused ? "Ambient FX: Off" : "Ambient FX: Live";
+      if (!paused) requestAnimationFrame(tick);
+      else drawStaticFrame();
+    });
+    headerInner.appendChild(toggleBtn);
+  }
+  document.documentElement.dataset.fxPaused = String(paused);
+
+  // Card cursor-tracked radial glow
+  window.addEventListener(
+    "pointermove",
+    (e) => {
+      mouse.tx = e.clientX;
+      mouse.ty = e.clientY;
+      const cards = document.querySelectorAll(
+        ".rh-hero-card, .rh-pair-card, .rh-note-card, .rh-order-card, .rh-fact-box, .book"
+      );
+      for (const card of cards) {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--mx", `${(e.clientX - rect.left).toFixed(0)}px`);
+        card.style.setProperty("--my", `${(e.clientY - rect.top).toFixed(0)}px`);
+      }
+    },
+    { passive: true }
+  );
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  let width = (canvas.width = window.innerWidth);
+  let height = (canvas.height = window.innerHeight);
+
+  const mouse = {
+    x: width * 0.5,
+    y: height * 0.3,
+    tx: width * 0.5,
+    ty: height * 0.3,
+  };
+
+  window.addEventListener(
+    "resize",
+    () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      if (paused) drawStaticFrame();
+    },
+    { passive: true }
+  );
+
+  const TAGS = [
+    "NVDAX",
+    "TSLAX",
+    "GMEX",
+    "SPYX",
+    "AMZNX",
+    "$NVYDA",
+    "$CYBER",
+    "$ROAR",
+    "$PRINTER",
+    "0.00G",
+    "+0.30%",
+  ];
+
+  const nodes = Array.from({ length: 34 }, (_, idx) => ({
+    x: Math.random() * width,
+    y: Math.random() * height,
+    vx: (Math.random() - 0.5) * 0.28,
+    vy: -(0.12 + Math.random() * 0.32), // Zero-G upward drift
+    r: idx % 3 === 0 ? 2.2 : 1.3,
+    tag: idx < TAGS.length ? TAGS[idx] : "",
+    alpha: 0.18 + Math.random() * 0.32,
+  }));
+
+  function drawGridAndSpotlight() {
+    ctx.clearRect(0, 0, width, height);
+
+    // Cursor-reactive emerald aurora orb
+    const grad = ctx.createRadialGradient(mouse.x, mouse.y, 10, mouse.x, mouse.y, 460);
+    grad.addColorStop(0, "rgba(0, 200, 5, 0.09)");
+    grad.addColorStop(0.45, "rgba(0, 200, 5, 0.03)");
+    grad.addColorStop(1, "rgba(0, 200, 5, 0)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, width, height);
+
+    // Subtle secondary ambient orb top-right
+    const orb2 = ctx.createRadialGradient(width * 0.82, height * 0.18, 20, width * 0.82, height * 0.18, 520);
+    orb2.addColorStop(0, "rgba(0, 200, 5, 0.05)");
+    orb2.addColorStop(1, "rgba(0, 200, 5, 0)");
+    ctx.fillStyle = orb2;
+    ctx.fillRect(0, 0, width, height);
+
+    // Architectural quant grid lines illuminated near cursor
+    const step = 64;
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.022)";
+    ctx.beginPath();
+    for (let x = 0; x < width; x += step) {
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+    }
+    for (let y = 0; y < height; y += step) {
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+    }
+    ctx.stroke();
+  }
+
+  function drawStaticFrame() {
+    drawGridAndSpotlight();
+  }
+
+  function tick() {
+    if (paused) return;
+
+    mouse.x += (mouse.tx - mouse.x) * 0.08;
+    mouse.y += (mouse.ty - mouse.y) * 0.08;
+
+    drawGridAndSpotlight();
+
+    // Update and draw Zero-G telemetry nodes
+    ctx.font = '500 10px "IBM Plex Sans", monospace';
+    for (let i = 0; i < nodes.length; i += 1) {
+      const n = nodes[i];
+      n.x += n.vx;
+      n.y += n.vy;
+
+      // Gentle cursor repulsion in Zero-G
+      const dx = n.x - mouse.x;
+      const dy = n.y - mouse.y;
+      const distSq = dx * dx + dy * dy;
+      if (distSq < 26000 && distSq > 1) {
+        const dist = Math.sqrt(distSq);
+        const force = (160 - dist) / 160;
+        n.x += (dx / dist) * force * 0.9;
+        n.y += (dy / dist) * force * 0.9;
+      }
+
+      if (n.y < -20) {
+        n.y = height + 20;
+        n.x = Math.random() * width;
+      }
+      if (n.x < -20) n.x = width + 20;
+      if (n.x > width + 20) n.x = -20;
+
+      // Constellation links between nearby nodes
+      for (let j = i + 1; j < nodes.length; j += 1) {
+        const m = nodes[j];
+        const lx = n.x - m.x;
+        const ly = n.y - m.y;
+        const d2 = lx * lx + ly * ly;
+        if (d2 < 21000) {
+          const lineAlpha = (1 - d2 / 21000) * 0.11;
+          ctx.strokeStyle = `rgba(0, 200, 5, ${lineAlpha.toFixed(3)})`;
+          ctx.beginPath();
+          ctx.moveTo(n.x, n.y);
+          ctx.lineTo(m.x, m.y);
+          ctx.stroke();
+        }
+      }
+
+      // Draw node point
+      ctx.fillStyle = `rgba(0, 200, 5, ${n.alpha.toFixed(2)})`;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw floating micro ticker label on tagged nodes
+      if (n.tag) {
+        ctx.fillStyle = `rgba(155, 163, 176, ${(n.alpha * 0.65).toFixed(2)})`;
+        ctx.fillText(n.tag, n.x + 6, n.y + 3);
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  if (paused) {
+    drawStaticFrame();
+  } else {
+    requestAnimationFrame(tick);
+  }
+}

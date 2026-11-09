@@ -22,7 +22,8 @@ import {
   bindCopy,
   bindImages,
   coinMark,
-} from "./market.js?v=20261108b";
+  mountAmbientFX,
+} from "./market.js?v=20261108c";
 
 const NARROW = window.matchMedia("(max-width: 1080px)");
 
@@ -72,6 +73,7 @@ const state = {
 
 bindCopy(app);
 bindImages(app);
+mountAmbientFX();
 app.addEventListener("click", onClick);
 app.addEventListener("change", onChange);
 NARROW.addEventListener("change", syncNarrowLabels);
@@ -153,6 +155,12 @@ function render() {
   const deltaInfo = computeSeriesDelta(state.portfolioPoints, figure.marketCap);
 
   app.innerHTML = `
+    <div class="rh-tape-wrap" aria-label="Live market ticker tape">
+      <div class="rh-tape-track" id="ticker-tape">
+        ${tickerTapeMarkup(book, state.live)}
+      </div>
+    </div>
+
     <section class="rh-hero" id="overview">
       <div class="rh-hero-main">
         <div class="rh-kicker-row">
@@ -407,6 +415,33 @@ function allocationBarMarkup(book, live) {
     .join("");
 }
 
+function tickerTapeMarkup(book, live) {
+  const entries = Object.keys(book.pairedAssets || {});
+  const items = entries.map((symbol) => {
+    const pair = pairView(book, symbol, live);
+    const chg = Number(pair.change24h);
+    const arrow = chg > 0 ? "▲" : chg < 0 ? "▼" : "•";
+    const px = pair.priceUsd == null ? "—" : formatUsd(pair.priceUsd, 2);
+    return `<span class="rh-tape-item">
+      <strong>${esc(pair.symbol)}</strong>
+      <span>${esc(px)}</span>
+      <span class="${pctClass(chg)}">${arrow} ${esc(formatPct(chg))}</span>
+    </span>`;
+  });
+  for (const raw of book.coins || []) {
+    const coin = viewCoin(raw, live);
+    const chg = Number(coin.change24h);
+    const arrow = chg > 0 ? "▲" : chg < 0 ? "▼" : "•";
+    items.push(`<span class="rh-tape-item">
+      <strong>$${esc(coin.ticker)}/${esc(raw.pair)}</strong>
+      <span>${esc(formatPrice(Number(coin.priceUsd)))}</span>
+      <span class="${pctClass(chg)}">${arrow} ${esc(formatPct(chg))}</span>
+    </span>`);
+  }
+  const pass = items.join('<span class="rh-tape-sep" aria-hidden="true">•</span>');
+  return `<div class="rh-tape-group">${pass}</div><div class="rh-tape-group" aria-hidden="true">${pass}</div>`;
+}
+
 function pairedStripMarkup(book, live) {
   const entries = Object.keys(book.pairedAssets || {});
   return entries
@@ -464,6 +499,8 @@ function paintFigures() {
   }
   if (vaultEl) vaultEl.innerHTML = vaultBreakdownMarkup(state.book, state.live);
   if (stripEl) stripEl.innerHTML = pairedStripMarkup(state.book, state.live);
+  const tapeEl = document.getElementById("ticker-tape");
+  if (tapeEl) tapeEl.innerHTML = tickerTapeMarkup(state.book, state.live);
 
   renderRows();
   document.documentElement.dataset.quotes = quoteState(state.book, state.live);
