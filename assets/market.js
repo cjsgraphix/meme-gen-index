@@ -340,9 +340,9 @@ function dedupeDays(points) {
 }
 
 export function sparklineSvg(values, change) {
-  const width = 88;
-  const height = 28;
-  const pad = 2;
+  const width = 104;
+  const height = 34;
+  const pad = 3;
   const nums = (values || []).map(Number).filter((value) => Number.isFinite(value));
   const tone = change > 0 ? "up" : change < 0 ? "down" : "flat";
   if (nums.length < 2) {
@@ -352,12 +352,19 @@ export function sparklineSvg(values, change) {
   const max = Math.max(...nums);
   const span = max - min || 1;
   const step = (width - pad * 2) / (nums.length - 1);
-  const commands = nums.map((value, index) => {
+  const pts = nums.map((value, index) => {
     const x = pad + index * step;
     const y = pad + (1 - (value - min) / span) * (height - pad * 2);
-    return `${index ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`;
+    return [x, y];
   });
-  return `<svg class="spark spark-${tone}" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" aria-hidden="true"><path d="${commands.join(" ")}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+  const commands = pts.map(([x, y], index) => `${index ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
+  const area = `${commands} L${pts[pts.length - 1][0].toFixed(1)} ${height} L${pts[0][0].toFixed(1)} ${height} Z`;
+  const baseLineY = pts[0][1].toFixed(1);
+  return `<svg class="spark spark-${tone}" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" aria-hidden="true">
+    <path d="${area}" fill="currentColor" fill-opacity="0.12"/>
+    <line x1="${pad}" y1="${baseLineY}" x2="${width - pad}" y2="${baseLineY}" stroke="currentColor" stroke-opacity="0.28" stroke-width="1" stroke-dasharray="2 2"/>
+    <path d="${commands}" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"/>
+  </svg>`;
 }
 
 export function formatUsd(value, digits = 2) {

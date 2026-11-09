@@ -31,6 +31,8 @@ const view = {
   live: new Map(),
   points: [],
   series: null,
+  chart: null,
+  rangeDays: 64,
 };
 
 void init();
@@ -80,6 +82,7 @@ function render() {
   const series = seriesFor(view.raw, view.book.asOf);
   view.points = series.points;
   const change = Number(coin.change24h);
+  const arrow = change > 0 ? "▲" : change < 0 ? "▼" : "";
   const price = Number(coin.priceUsd);
   const cap = Number(coin.marketCapUsd);
   const qty = Number(view.raw.creatorFeesToken);
@@ -87,7 +90,7 @@ function render() {
   const date = formatAsOf(view.book.asOf);
   const pairLabel = pair.name ? `${pair.symbol} (${pair.name})` : pair.symbol;
   const market = safeHttpUrl(view.raw.pumpUrl);
-  const headRight = view.book.sample !== false || series.synthetic ? "Illustrative" : "From file";
+  const headRight = view.book.sample !== false || series.synthetic ? "Illustrative Series" : "Historical Series";
   const caption = series.synthetic
     ? "Illustrative daily path drawn from the price and 24h change in data/coins.json. Not a live print."
     : "Daily path from this coin’s history in data/coins.json. Not a live print.";
@@ -95,70 +98,88 @@ function render() {
   document.title = `${coin.name || "Coin"}${coin.ticker ? ` (${coin.ticker})` : ""} · MemeGenIndex`;
 
   app.innerHTML = `
-    <p class="back"><a href="index.html">← Portfolio</a></p>
-    ${date ? `<p class="kicker">${esc(date)}</p>` : ""}
-    <div class="title-block">
-      <div class="title-row">
-        ${coinMark(coin, "lg", "coin-mark")}
-        <div class="title-copy">
-          <h1>${esc(coin.name || "Untitled")}</h1>
-          <p class="sub">${esc(coin.ticker || "—")} · Paired with ${esc(pairLabel)}</p>
-        </div>
-      </div>
-    </div>
-    <div class="quote">
-      <div>
-        <p class="px" id="px">${esc(Number.isFinite(price) ? formatPrice(price) : "—")}</p>
-        <p class="meta" id="px-meta">${esc(priceMeta(coin))}</p>
-      </div>
-      <div>
-        <p class="chg ${pctClass(change)}" id="chg">${esc(formatPct(change))}</p>
-        <p class="meta">24h</p>
-      </div>
-    </div>
+    <p class="back"><a href="index.html">← Back to Index Portfolio</a></p>
     <div class="detail-grid">
       <div class="chart-col">
+        <div class="title-block">
+          <div class="title-row">
+            ${coinMark(coin, "lg", "coin-mark")}
+            <div class="title-copy">
+              <div class="rh-kicker-row" style="margin-bottom: 4px;">
+                <span class="rh-pair-tag">${esc(coin.ticker || "—")} / ${esc(pair.symbol)}</span>
+                ${date ? `<span class="rh-asof">${esc(date)}</span>` : ""}
+              </div>
+              <h1>${esc(coin.name || "Untitled")}</h1>
+              <p class="sub">Quoted in ${esc(pairLabel)} via pump.fun Custom Pair</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote">
+          <div>
+            <p class="px" id="px">${esc(Number.isFinite(price) ? formatPrice(price) : "—")}</p>
+            <div class="rh-hero-delta" style="margin-top: 8px;">
+              <span class="rh-delta-badge ${pctClass(change)}" id="chg">${arrow ? `${arrow} ` : ""}${esc(formatPct(change))}</span>
+              <span class="rh-delta-period" id="px-meta">24h · ${esc(priceMeta(coin))}</span>
+            </div>
+          </div>
+        </div>
+
         <div class="chart-head">
-          <span>Daily closes</span>
+          <span>Daily Performance Curve</span>
           <span>${esc(headRight)}</span>
         </div>
         <div id="chart" class="chart-frame" role="group" aria-label="Daily price chart, illustrative"></div>
         <p class="caption" id="chart-caption">${esc(caption)}</p>
       </div>
+
       <aside class="facts" aria-label="Coin facts">
-        <section class="fact">
-          <h2>Market cap</h2>
-          <p class="value" id="mcap">${esc(Number.isFinite(cap) ? formatUsd(cap, 0) : "—")}</p>
-        </section>
-        <section class="fact">
-          <h2>Creator fees</h2>
-          <p class="value" id="fee-token">${esc(Number.isFinite(qty) ? formatQty(qty) : "—")} ${esc(pair.symbol)}</p>
-          <p class="subvalue" id="fee-usd">${fees == null ? "—" : esc(formatUsd(fees, 0))}</p>
-        </section>
-        <section class="fact">
-          <h2>Paired stock</h2>
-          <p class="pair-line">${esc(pair.symbol)}</p>
-          ${pair.name ? `<p class="pair-name">${esc(pair.name)}</p>` : ""}
-          ${pair.kind ? `<p class="kind">${esc(pair.kind)}</p>` : ""}
-          <div class="pair-last">
-            <p class="px" id="pair-px">${esc(pair.priceUsd == null ? "—" : formatUsd(pair.priceUsd, 2))}</p>
-            <p class="chg ${pctClass(Number(pair.change24h))}" id="pair-chg">${esc(formatPct(Number(pair.change24h)))}</p>
+        <div class="rh-order-card">
+          <div class="rh-order-top">
+            <span class="rh-order-title">Trade ${esc(coin.ticker || "Coin")}</span>
+            <span class="rh-order-pair">Pair: ${esc(pair.symbol)}</span>
           </div>
-          <p class="meta" id="pair-src">${esc(pairSource(pair))}</p>
-          ${pair.mint ? `<p class="mint-label">Mint</p>${addressBlock(pair.mint, "Copy paired stock mint")}` : ""}
-          <p class="restrict">Subject to the issuer’s jurisdiction restrictions.</p>
-        </section>
-        <section class="fact">
-          <h2>Contract</h2>
-          ${addressBlock(view.raw.mint || "", "Copy contract address")}
-        </section>
-        <section class="fact">
-          <h2>Market page</h2>
           ${
             market
-              ? `<p><a class="link" href="${esc(market)}" target="_blank" rel="noopener noreferrer">Open on pump.fun<span aria-hidden="true"> ↗</span></a></p>`
-              : `<p class="pair-name">No pump.fun page. This entry is a sample and its mint is a placeholder.</p>`
+              ? `<a class="rh-cta-primary" href="${esc(market)}" target="_blank" rel="noopener noreferrer">Open Pool on pump.fun ↗</a>`
+              : `<p class="pair-name">No pump.fun page yet. Set pumpUrl in data/coins.json once launched.</p>`
           }
+          <div class="rh-order-stats">
+            <div class="rh-stat-row">
+              <span>Market Cap</span>
+              <strong id="mcap">${esc(Number.isFinite(cap) ? formatUsd(cap, 0) : "—")}</strong>
+            </div>
+            <div class="rh-stat-row">
+              <span>Creator Fees (${esc(pair.symbol)})</span>
+              <strong id="fee-token">${esc(Number.isFinite(qty) ? formatQty(qty) : "—")} ${esc(pair.symbol)}</strong>
+            </div>
+            <div class="rh-stat-row">
+              <span>Fee Vault Value (USD)</span>
+              <strong id="fee-usd" style="color: var(--up);">${fees == null ? "—" : esc(formatUsd(fees, 2))}</strong>
+            </div>
+          </div>
+        </div>
+
+        <section class="fact rh-fact-box">
+          <h2>Paired Stock Quote</h2>
+          <div class="rh-pair-quote-row">
+            <div>
+              <p class="pair-line">${esc(pair.symbol)}</p>
+              ${pair.name ? `<p class="pair-name">${esc(pair.name)} · ${esc(pair.kind || "Tokenized stock")}</p>` : ""}
+            </div>
+            <div style="text-align: right;">
+              <p class="px" id="pair-px">${esc(pair.priceUsd == null ? "—" : formatUsd(pair.priceUsd, 2))}</p>
+              <p class="rh-pill ${pctClass(Number(pair.change24h))}" id="pair-chg" style="margin-top: 4px;">${esc(formatPct(Number(pair.change24h)))}</p>
+            </div>
+          </div>
+          <p class="meta" id="pair-src">${esc(pairSource(pair))}</p>
+          ${pair.mint ? `<p class="mint-label">Paired Stock Mint</p>${addressBlock(pair.mint, "Copy paired stock mint")}` : ""}
+          <p class="restrict">Subject to the issuer’s jurisdiction restrictions.</p>
+        </section>
+
+        <section class="fact rh-fact-box">
+          <h2>Coin Contract</h2>
+          ${addressBlock(view.raw.mint || "", "Copy contract address")}
         </section>
       </aside>
     </div>
@@ -177,18 +198,19 @@ function paintQuotes() {
   const coin = viewCoin(view.raw, view.live);
   const pair = pairView(view.book, view.raw.pair, view.live);
   const change = Number(coin.change24h);
+  const arrow = change > 0 ? "▲" : change < 0 ? "▼" : "";
   const price = Number(coin.priceUsd);
   const cap = Number(coin.marketCapUsd);
   const fees = feeUsd(view.raw, pair);
   setText("px", Number.isFinite(price) ? formatPrice(price) : "—");
-  setText("px-meta", priceMeta(coin));
-  setText("chg", formatPct(change));
-  setClass("chg", `chg ${pctClass(change)}`);
+  setText("px-meta", `24h · ${priceMeta(coin)}`);
+  setText("chg", `${arrow ? `${arrow} ` : ""}${formatPct(change)}`);
+  setClass("chg", `rh-delta-badge ${pctClass(change)}`);
   setText("mcap", Number.isFinite(cap) ? formatUsd(cap, 0) : "—");
-  setText("fee-usd", fees == null ? "—" : formatUsd(fees, 0));
+  setText("fee-usd", fees == null ? "—" : formatUsd(fees, 2));
   setText("pair-px", pair.priceUsd == null ? "—" : formatUsd(pair.priceUsd, 2));
   setText("pair-chg", formatPct(Number(pair.change24h)));
-  setClass("pair-chg", `chg ${pctClass(Number(pair.change24h))}`);
+  setClass("pair-chg", `rh-pill ${pctClass(Number(pair.change24h))}`);
   setText("pair-src", pairSource(pair));
   paintIcon(coin);
 
@@ -231,30 +253,34 @@ async function mountChart() {
     return;
   }
   try {
-    const accent = cssVar("--accent", "#c6a15e");
+    const isUp = Number(view.raw?.change24h ?? 0) >= 0;
+    const lineColor = isUp ? cssVar("--up", "#00c805") : cssVar("--down", "#ff5000");
+    const topColor = isUp ? "rgba(0, 200, 5, 0.24)" : "rgba(255, 80, 0, 0.24)";
+    const bottomColor = "rgba(0, 0, 0, 0.0)";
+
     const chart = lib.createChart(frame, {
       autoSize: true,
       layout: {
-        background: { type: "solid", color: cssVar("--bg", "#0e0f11") },
-        textColor: cssVar("--text-faint", "#9c968c"),
+        background: { type: "solid", color: cssVar("--bg-elev", "#0d1117") },
+        textColor: cssVar("--text-faint", "#7d8590"),
         fontFamily: getComputedStyle(document.body).fontFamily,
         fontSize: 12,
         attributionLogo: false,
       },
       grid: {
         vertLines: { visible: false },
-        horzLines: { color: cssVar("--line", "#2a2c31") },
+        horzLines: { color: cssVar("--line", "#1f242c") },
       },
       crosshair: {
-        vertLine: { color: cssVar("--line-strong", "#3c3f46"), labelBackgroundColor: cssVar("--bg-elev", "#1a1c20") },
-        horzLine: { color: cssVar("--line-strong", "#3c3f46"), labelBackgroundColor: cssVar("--bg-elev", "#1a1c20") },
+        vertLine: { color: cssVar("--line-strong", "#30363d"), labelBackgroundColor: cssVar("--bg-elev", "#161b22") },
+        horzLine: { color: cssVar("--line-strong", "#30363d"), labelBackgroundColor: cssVar("--bg-elev", "#161b22") },
       },
       rightPriceScale: {
-        borderColor: cssVar("--line", "#2a2c31"),
+        borderColor: cssVar("--line", "#1f242c"),
         minimumWidth: 96,
-        scaleMargins: { top: 0.12, bottom: 0.12 },
+        scaleMargins: { top: 0.14, bottom: 0.14 },
       },
-      timeScale: { borderColor: cssVar("--line", "#2a2c31"), fixLeftEdge: true, fixRightEdge: true },
+      timeScale: { borderColor: cssVar("--line", "#1f242c"), fixLeftEdge: true, fixRightEdge: true },
       handleScroll: { mouseWheel: false, pressedMouseMove: true, horzTouchDrag: false, vertTouchDrag: false },
       handleScale: {
         mouseWheel: false,
@@ -268,20 +294,35 @@ async function mountChart() {
         priceFormatter: (value) => formatPrice(value),
       },
     });
-    const series = chart.addLineSeries({
-      color: accent,
-      lineWidth: 2,
-      priceLineVisible: false,
-      lastValueVisible: true,
-      crosshairMarkerVisible: true,
-      crosshairMarkerRadius: 3,
-      crosshairMarkerBorderColor: accent,
-      crosshairMarkerBackgroundColor: cssVar("--bg", "#0e0f11"),
-      priceFormat: { type: "price", precision: 8, minMove: 0.00000001 },
-    });
+    const series = typeof chart.addAreaSeries === "function"
+      ? chart.addAreaSeries({
+          lineColor,
+          topColor,
+          bottomColor,
+          lineWidth: 2,
+          priceLineVisible: false,
+          lastValueVisible: true,
+          crosshairMarkerVisible: true,
+          crosshairMarkerRadius: 4,
+          crosshairMarkerBorderColor: lineColor,
+          crosshairMarkerBackgroundColor: cssVar("--bg", "#06080a"),
+          priceFormat: { type: "price", precision: 8, minMove: 0.00000001 },
+        })
+      : chart.addLineSeries({
+          color: lineColor,
+          lineWidth: 2,
+          priceLineVisible: false,
+          lastValueVisible: true,
+          crosshairMarkerVisible: true,
+          crosshairMarkerRadius: 4,
+          crosshairMarkerBorderColor: lineColor,
+          crosshairMarkerBackgroundColor: cssVar("--bg", "#06080a"),
+          priceFormat: { type: "price", precision: 8, minMove: 0.00000001 },
+        });
     series.setData(view.points);
     chart.timeScale().fitContent();
     view.series = series;
+    view.chart = chart;
   } catch {
     frame.innerHTML = fallbackChart(view.points);
   }
@@ -309,10 +350,10 @@ function fallbackChart(points) {
   const grid = [0.25, 0.5, 0.75]
     .map((t) => {
       const y = (top + innerH * t).toFixed(1);
-      return `<line x1="${left}" y1="${y}" x2="${width - right}" y2="${y}" stroke="#2a2c31" stroke-width="1"/>`;
+      return `<line x1="${left}" y1="${y}" x2="${width - right}" y2="${y}" stroke="#1f242c" stroke-width="1"/>`;
     })
     .join("");
-  return `<svg class="fallback" viewBox="0 0 ${width} ${height}" role="img" aria-label="Illustrative price path"><rect width="${width}" height="${height}" fill="#0e0f11"/>${grid}<path d="${d}" fill="none" stroke="#c6a15e" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><text x="${left}" y="${height - 8}" fill="#9c968c" font-size="12" font-family="IBM Plex Sans, sans-serif">${esc(points[0].time)}</text><text x="${width - right}" y="${height - 8}" fill="#9c968c" font-size="12" text-anchor="end" font-family="IBM Plex Sans, sans-serif">${esc(points[points.length - 1].time)}</text></svg>`;
+  return `<svg class="fallback" viewBox="0 0 ${width} ${height}" role="img" aria-label="Illustrative price path"><rect width="${width}" height="${height}" fill="#0d1117"/>${grid}<path d="${d}" fill="none" stroke="#00c805" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><text x="${left}" y="${height - 8}" fill="#7d8590" font-size="12" font-family="IBM Plex Sans, sans-serif">${esc(points[0].time)}</text><text x="${width - right}" y="${height - 8}" fill="#7d8590" font-size="12" text-anchor="end" font-family="IBM Plex Sans, sans-serif">${esc(points[points.length - 1].time)}</text></svg>`;
 }
 
 function paintIcon(coin) {
@@ -324,15 +365,15 @@ function paintIcon(coin) {
 }
 
 function priceMeta(coin) {
-  if (coin.live) return "DexScreener";
+  if (coin.live) return "DexScreener Live";
   if (coin.placeholder || view.book.sample !== false) return "Sample mark from data/coins.json";
-  return "File mark. Live quote unavailable.";
+  return "File mark · Live quote unavailable";
 }
 
 function pairSource(pair) {
-  if (pair.quoteSource === "dexscreener") return "DexScreener · 24h";
+  if (pair.quoteSource === "dexscreener") return "Live DexScreener Quote · 24h";
   if (pair.quoteSource === "missing") return "No pair price in data/coins.json";
-  return "Pair price from data/coins.json · 24h";
+  return "Reference price from data/coins.json · 24h";
 }
 
 function setText(id, text) {
